@@ -19,7 +19,7 @@ development:
   encoding: unicode
   database: open_chat_development
   pool: 5
-  username: open_chat
+  username: postgres
   password:
 
   # Connect on a TCP socket. Omitted by default since the client uses a
@@ -48,7 +48,7 @@ test:
   encoding: unicode
   database: open_chat_test
   pool: 5
-  username: open_chat
+  username: postgres
   password:
 
 production:
@@ -56,5 +56,5 @@ production:
   encoding: unicode
   database: open_chat_production
   pool: 5
-  username: open_chat
+  username: postgres
   password:
