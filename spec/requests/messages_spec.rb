@@ -73,6 +73,17 @@ describe "Message Requests" do
   end
 
   describe "DELETE /messages/:id/star" do
-    pending
+    let!(:message) { create(:message, :starred) }
+
+    it "unstars the message" do
+      expect {
+        delete "/messages/#{message.id}/star.json"
+      }.to change {
+        message.reload.starred?
+      }.from(true).to(false)
+
+      expect(response.status).to eq(200)
+      expect(response.body).to be_blank
+    end
   end
 end

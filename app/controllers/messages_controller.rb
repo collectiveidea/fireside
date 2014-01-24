@@ -17,7 +17,8 @@ class MessagesController < ApplicationController
   end
 
   def unstar
-    # TODO
+    @message.unstar
+    head :ok
   end
 
   private

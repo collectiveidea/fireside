@@ -24,4 +24,16 @@ describe Message do
       }.from(false).to(true)
     end
   end
+
+  describe "#unstar" do
+    it "sets starred to false and saves" do
+      message = create(:message, starred: true)
+
+      expect {
+        message.unstar
+      }.to change {
+        message.reload.starred?
+      }.from(true).to(false)
+    end
+  end
 end
