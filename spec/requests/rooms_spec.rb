@@ -63,7 +63,18 @@ describe "Room Requests" do
   end
 
   describe "PUT /room/:id" do
-    pending
+    let!(:room) { create(:room, topic: "Hello!") }
+
+    it "updates the room" do
+      expect {
+        put_json "/room/#{room.id}.json", %({"topic":"Goodbye."})
+      }.to change {
+        room.reload.topic
+      }.from("Hello!").to("Goodbye.")
+
+      expect(response.status).to eq(200)
+      expect(response.body).to be_blank
+    end
   end
 
   describe "POST /room/:id/join" do
