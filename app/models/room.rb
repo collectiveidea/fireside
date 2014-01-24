@@ -17,4 +17,8 @@ class Room < ActiveRecord::Base
   end
 
   alias_method :full?, :full
+
+  def lock
+    update(locked: true)
+  end
 end

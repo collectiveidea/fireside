@@ -25,7 +25,8 @@ class RoomsController < ApplicationController
   end
 
   def lock
-    # TODO
+    @room.lock
+    head :ok
   end
 
   def unlock
