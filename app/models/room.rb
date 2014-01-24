@@ -1,6 +1,8 @@
 class Room < ActiveRecord::Base
   MEMBERSHIP_LIMIT = 1_000_000
 
+  has_many :messages, inverse_of: :room, dependent: :nullify
+
   validates :name, presence: true, uniqueness: true
   validates :active_token_value, uniqueness: { allow_nil: true }, strict: true
 
