@@ -13,11 +13,13 @@ describe "Message Requests" do
         "messages" => [
           {
             "body" => old_message.body,
-            "created_at" => old_message.created_at.as_json
+            "created_at" => old_message.created_at.as_json,
+            "id" => old_message.id
           },
           {
             "body" => new_message.body,
-            "created_at" => new_message.created_at.as_json
+            "created_at" => new_message.created_at.as_json,
+            "id" => new_message.id
           }
         ]
       )
@@ -34,7 +36,8 @@ describe "Message Requests" do
       expect(response.json).to eq(
         "message" => {
           "body" => message.body,
-          "created_at" => message.created_at.as_json
+          "created_at" => message.created_at.as_json,
+          "id" => message.id
         }
       )
     end
@@ -54,7 +57,8 @@ describe "Message Requests" do
       expect(response.json).to eq(
         "message" => {
           "body" => message.body,
-          "created_at" => message.created_at.as_json
+          "created_at" => message.created_at.as_json,
+          "id" => message.id
         }
       )
     end
