@@ -6,4 +6,8 @@ class Message < ActiveRecord::Base
   def self.old_to_new
     order(:created_at)
   end
+
+  def star
+    update(starred: true)
+  end
 end

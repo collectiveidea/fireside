@@ -12,4 +12,16 @@ describe Message do
       expect(Message.old_to_new).to eq(messages.sort_by(&:created_at))
     end
   end
+
+  describe "#star" do
+    it "sets starred to true and saves" do
+      message = create(:message, starred: false)
+
+      expect {
+        message.star
+      }.to change {
+        message.reload.starred?
+      }.from(false).to(true)
+    end
+  end
 end
