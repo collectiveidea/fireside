@@ -30,7 +30,8 @@ class RoomsController < ApplicationController
   end
 
   def unlock
-    # TODO
+    @room.unlock
+    head :ok
   end
 
   private
