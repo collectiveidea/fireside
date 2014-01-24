@@ -10,4 +10,8 @@ class Message < ActiveRecord::Base
   def star
     update(starred: true)
   end
+
+  def unstar
+    update(starred: false)
+  end
 end
