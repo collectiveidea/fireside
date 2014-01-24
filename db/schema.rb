@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140124021619) do
+ActiveRecord::Schema.define(version: 20140124105809) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -20,5 +20,19 @@ ActiveRecord::Schema.define(version: 20140124021619) do
     t.text     "body"
     t.datetime "created_at"
   end
+
+  create_table "rooms", force: true do |t|
+    t.string   "name"
+    t.string   "topic"
+    t.boolean  "open_to_guests",               default: false, null: false
+    t.string   "active_token_value", limit: 5
+    t.boolean  "locked",                       default: false, null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "rooms", ["active_token_value"], name: "index_rooms_on_active_token_value", unique: true, using: :btree
+  add_index "rooms", ["created_at"], name: "index_rooms_on_created_at", using: :btree
+  add_index "rooms", ["name"], name: "index_rooms_on_name", unique: true, using: :btree
 
 end
