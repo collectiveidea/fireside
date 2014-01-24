@@ -39,4 +39,24 @@ describe "Message Requests" do
       )
     end
   end
+
+  describe "POST /messages" do
+    it "creates a message" do
+      expect {
+        post_json "/messages", %({"body":"Hello, world!"})
+      }.to change {
+        Message.count
+      }.from(0).to(1)
+
+      message = Message.last
+
+      expect(response.status).to eq(201)
+      expect(response.json).to eq(
+        "message" => {
+          "body" => message.body,
+          "created_at" => message.created_at.as_json
+        }
+      )
+    end
+  end
 end
