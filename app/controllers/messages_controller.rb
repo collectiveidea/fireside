@@ -3,10 +3,6 @@ class MessagesController < ApplicationController
     @messages = Message.old_to_new
   end
 
-  def show
-    @message = Message.find(params[:id])
-  end
-
   def create
     @message = Message.create!(message_params)
     render :show, status: :created

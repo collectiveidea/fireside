@@ -26,23 +26,6 @@ describe "Message Requests" do
     end
   end
 
-  describe "GET /messages/:id" do
-    let!(:message) { create(:message) }
-
-    it "shows the message" do
-      get "/messages/#{message.id}"
-
-      expect(response.status).to eq(200)
-      expect(response.json).to eq(
-        "message" => {
-          "body" => message.body,
-          "created_at" => message.created_at.as_json,
-          "id" => message.id
-        }
-      )
-    end
-  end
-
   describe "POST /messages" do
     it "creates a message" do
       expect {
