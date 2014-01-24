@@ -24,4 +24,16 @@ describe Room do
       }.from(false).to(true)
     end
   end
+
+  describe "#unlock" do
+    it "sets locked to false and saves" do
+      message = create(:room, locked: true)
+
+      expect {
+        message.unlock
+      }.to change {
+        message.reload.locked?
+      }.from(true).to(false)
+    end
+  end
 end

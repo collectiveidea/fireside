@@ -94,6 +94,21 @@ describe "Room Requests" do
   end
 
   describe "POST /room/:id/unlock" do
-    pending
+    let!(:room) { create(:room, :locked) }
+
+    it "unlocks the room" do
+      expect {
+        post "/room/#{room.id}/unlock.json"
+      }.to change {
+        room.reload.locked?
+      }.from(true).to(false)
+
+      expect(response.status).to eq(200)
+      expect(response.body).to be_blank
+    end
+
+    it "resumes transcripts" do
+      pending
+    end
   end
 end
