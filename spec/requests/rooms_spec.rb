@@ -2,10 +2,10 @@ require "spec_helper"
 
 describe "Room Requests" do
   describe "GET /rooms" do
-    it "lists all rooms" do
-      room_1 = create(:room, created_at: 2.days.ago)
-      room_2 = create(:room, :locked, created_at: 1.day.ago)
+    let!(:room_1) { create(:room, created_at: 2.days.ago) }
+    let!(:room_2) { create(:room, :locked, created_at: 1.day.ago) }
 
+    it "lists all rooms" do
       get "/rooms.json"
 
       expect(response.status).to eq(200)
@@ -39,9 +39,9 @@ describe "Room Requests" do
   end
 
   describe "GET /room/:id" do
-    it "shows the room" do
-      room = create(:room, :with_guest_access, :locked)
+    let!(:room) { create(:room, :with_guest_access, :locked) }
 
+    it "shows the room" do
       get "/room/#{room.id}.json"
 
       expect(response.status).to eq(200)
@@ -75,7 +75,22 @@ describe "Room Requests" do
   end
 
   describe "POST /room/:id/lock" do
-    pending
+    let!(:room) { create(:room) }
+
+    it "locks the room" do
+      expect {
+        post "/room/#{room.id}/lock.json"
+      }.to change {
+        room.reload.locked?
+      }.from(false).to(true)
+
+      expect(response.status).to eq(200)
+      expect(response.body).to be_blank
+    end
+
+    it "pauses transcripts" do
+      pending
+    end
   end
 
   describe "POST /room/:id/unlock" do
