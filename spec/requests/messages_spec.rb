@@ -56,4 +56,23 @@ describe "Message Requests" do
       )
     end
   end
+
+  describe "POST /messages/:id/star" do
+    let!(:message) { create(:message) }
+
+    it "stars the message" do
+      expect {
+        post "/messages/#{message.id}/star.json"
+      }.to change {
+        message.reload.starred?
+      }.from(false).to(true)
+
+      expect(response.status).to eq(200)
+      expect(response.body).to be_blank
+    end
+  end
+
+  describe "DELETE /messages/:id/star" do
+    pending
+  end
 end
