@@ -1,4 +1,6 @@
 class RoomsController < ApplicationController
+  before_action :load_room, except: [:index, :presence]
+
   def index
     @rooms = Room.old_to_new
   end
@@ -8,7 +10,6 @@ class RoomsController < ApplicationController
   end
 
   def show
-    # TODO
   end
 
   def update
@@ -29,5 +30,11 @@ class RoomsController < ApplicationController
 
   def unlock
     # TODO
+  end
+
+  private
+
+  def load_room
+    @room = Room.find(params[:id])
   end
 end

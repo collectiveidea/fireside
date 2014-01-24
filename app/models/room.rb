@@ -1,6 +1,4 @@
 class Room < ActiveRecord::Base
-  MEMBERSHIP_LIMIT = 1_000_000
-
   has_many :messages, inverse_of: :room, dependent: :nullify
 
   validates :name, presence: true, uniqueness: true
@@ -11,6 +9,12 @@ class Room < ActiveRecord::Base
   end
 
   def membership_limit
-    MEMBERSHIP_LIMIT
+    nil
   end
+
+  def full
+    false
+  end
+
+  alias_method :full?, :full
 end
