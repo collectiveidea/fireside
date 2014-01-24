@@ -13,7 +13,8 @@ class RoomsController < ApplicationController
   end
 
   def update
-    # TODO
+    @room.update(room_params)
+    head :ok
   end
 
   def join
@@ -38,5 +39,9 @@ class RoomsController < ApplicationController
 
   def load_room
     @room = Room.find(params[:id])
+  end
+
+  def room_params
+    params.require(:room).permit(:name, :topic, :open_to_guests)
   end
 end
