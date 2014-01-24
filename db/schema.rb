@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140124125651) do
+ActiveRecord::Schema.define(version: 20140124165338) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,6 +22,7 @@ ActiveRecord::Schema.define(version: 20140124125651) do
     t.integer  "room_id"
   end
 
+  add_index "messages", ["created_at"], name: "index_messages_on_created_at", using: :btree
   add_index "messages", ["room_id"], name: "index_messages_on_room_id", using: :btree
 
   create_table "rooms", force: true do |t|
