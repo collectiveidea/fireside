@@ -184,7 +184,57 @@ describe "Room Requests" do
   end
 
   describe "POST /room/:id/leave" do
-    pending
+    let!(:room) { create(:room) }
+
+    context "when authenticated" do
+      let!(:user) { create(:user) }
+
+      before do
+        authenticate(user.api_auth_token)
+      end
+
+      context "when the user is in the room" do
+        before do
+          user.rooms << room
+        end
+
+        it "removes the current user from the room" do
+          expect {
+            post "/room/#{room.id}/leave.json"
+          }.to change {
+            room.users.count
+          }.from(1).to(0)
+
+          expect(response.status).to eq(200)
+          expect(response.body).to be_blank
+        end
+      end
+
+      context "when the user is not in the room" do
+        it "does nothing" do
+          expect {
+            post "/room/#{room.id}/leave.json"
+          }.not_to change {
+            room.users.count
+          }
+
+          expect(response.status).to eq(200)
+          expect(response.body).to be_blank
+        end
+      end
+    end
+
+    context "when unauthenticated" do
+      it "requires authentication" do
+        expect {
+          post "/room/#{room.id}/leave.json"
+        }.not_to change {
+          room.users.count
+        }
+
+        expect(response.status).to eq(401)
+      end
+    end
   end
 
   describe "POST /room/:id/lock" do
