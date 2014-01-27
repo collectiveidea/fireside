@@ -3,6 +3,9 @@ class User < ActiveRecord::Base
 
   has_secure_password
 
+  has_many :presences, inverse_of: :user, dependent: :destroy
+  has_many :rooms, through: :presences
+
   validates :name, presence: true
   validates :email, presence: true, email: true, uniqueness: true
 

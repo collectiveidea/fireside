@@ -130,7 +130,57 @@ describe "Room Requests" do
   end
 
   describe "POST /room/:id/join" do
-    pending
+    let!(:room) { create(:room) }
+
+    context "when authenticated" do
+      let!(:user) { create(:user) }
+
+      before do
+        authenticate(user.api_auth_token)
+      end
+
+      context "when the user is in the room" do
+        before do
+          user.rooms << room
+        end
+
+        it "does nothing" do
+          expect {
+            post "/room/#{room.id}/join.json"
+          }.not_to change {
+            room.users.count
+          }
+
+          expect(response.status).to eq(200)
+          expect(response.body).to be_blank
+        end
+      end
+
+      context "when the user is not in the room" do
+        it "adds the current user to the room" do
+          expect {
+            post "/room/#{room.id}/join.json"
+          }.to change {
+            room.users.count
+          }.from(0).to(1)
+
+          expect(response.status).to eq(200)
+          expect(response.body).to be_blank
+        end
+      end
+    end
+
+    context "when unauthenticated" do
+      it "requires authentication" do
+        expect {
+          post "/room/#{room.id}/join.json"
+        }.not_to change {
+          room.users.count
+        }
+
+        expect(response.status).to eq(401)
+      end
+    end
   end
 
   describe "POST /room/:id/leave" do

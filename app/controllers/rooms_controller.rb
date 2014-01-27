@@ -18,7 +18,8 @@ class RoomsController < ApplicationController
   end
 
   def join
-    # TODO
+    current_user.presences.find_or_create_by!(room_id: @room.id)
+    head :ok
   end
 
   def leave
