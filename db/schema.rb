@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140124165455) do
+ActiveRecord::Schema.define(version: 20140126232850) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -40,5 +40,19 @@ ActiveRecord::Schema.define(version: 20140124165455) do
   add_index "rooms", ["active_token_value"], name: "index_rooms_on_active_token_value", unique: true, using: :btree
   add_index "rooms", ["created_at"], name: "index_rooms_on_created_at", using: :btree
   add_index "rooms", ["name"], name: "index_rooms_on_name", unique: true, using: :btree
+
+  create_table "users", force: true do |t|
+    t.string   "name"
+    t.string   "email"
+    t.string   "password_digest"
+    t.string   "api_auth_token",  limit: 40
+    t.boolean  "admin",                      default: false, null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "users", ["api_auth_token"], name: "index_users_on_api_auth_token", unique: true, using: :btree
+  add_index "users", ["created_at"], name: "index_users_on_created_at", using: :btree
+  add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
 
 end
