@@ -15,6 +15,10 @@ class User < ActiveRecord::Base
     GRAVATAR_URL_TEMPLATE % gravatar_hash
   end
 
+  def join_room(room)
+    presences.find_or_create_by!(room_id: room.id)
+  end
+
   private
 
   def set_api_auth_token
