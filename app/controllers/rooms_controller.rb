@@ -23,7 +23,8 @@ class RoomsController < ApplicationController
   end
 
   def leave
-    # TODO
+    current_user.presences.where(room_id: @room.id).destroy_all
+    head :ok
   end
 
   def lock
