@@ -36,4 +36,14 @@ describe Room do
       }.from(true).to(false)
     end
   end
+
+  describe "#unlocked?" do
+    it "is the opposite of #locked?" do
+      locked = create(:room, locked: true)
+      unlocked = create(:room, locked: false)
+
+      expect(locked.unlocked?).to be_false
+      expect(unlocked.unlocked?).to be_true
+    end
+  end
 end

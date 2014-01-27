@@ -272,7 +272,14 @@ describe "Room Requests" do
           let!(:room) { create(:room, :locked) }
 
           it "denies access to the room" do
-            pending
+            expect {
+              post "/room/#{room.id}/join.json"
+            }.not_to change {
+              room.users.count
+            }
+
+            expect(response.status).to eq(423)
+            expect(response.body).to be_blank
           end
         end
       end
