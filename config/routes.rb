@@ -2,8 +2,8 @@ Fireside::Application.routes.draw do
   get "users/me"  => "users#current", as: nil
   get "users/:id" => "users#show"
 
-  get "rooms"    => "rooms#index",    as: nil
-  get "presence" => "rooms#presence", as: nil
+  get "rooms"    => "rooms#index",   as: nil
+  get "presence" => "rooms#current", as: nil
 
   get  "room/:id"        => "rooms#show"
   put  "room/:id"        => "rooms#update"

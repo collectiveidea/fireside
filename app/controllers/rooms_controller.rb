@@ -1,12 +1,13 @@
 class RoomsController < ApplicationController
-  before_action :load_room, except: [:index, :presence]
+  before_action :load_room, except: [:index, :current]
 
   def index
     @rooms = Room.old_to_new
   end
 
-  def presence
-    # TODO
+  def current
+    @rooms = current_user.rooms.old_to_new
+    render :index
   end
 
   def show

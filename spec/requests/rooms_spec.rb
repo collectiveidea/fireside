@@ -51,7 +51,56 @@ describe "Room Requests" do
   end
 
   describe "GET /presence" do
-    pending
+    let!(:room_1) { create(:room, created_at: 3.days.ago) }
+    let!(:room_2) { create(:room, created_at: 2.days.ago) }
+    let!(:room_3) { create(:room, created_at: 1.day.ago) }
+
+    context "when authenticated" do
+      let!(:user) { create(:user) }
+
+      before do
+        authenticate(user.api_auth_token)
+      end
+
+      it "lists the current user's rooms" do
+        create(:presence, user: user, room: room_1)
+        create(:presence, user: user, room: room_3)
+
+        get "/presence.json"
+
+        expect(response.status).to eq(200)
+        expect(response.json).to eq(
+          "rooms" => [
+            {
+              "created_at" => room_1.created_at.as_json,
+              "id" => room_1.id,
+              "locked" => room_1.locked?,
+              "membership_limit" => room_1.membership_limit,
+              "name" => room_1.name,
+              "topic" => room_1.topic,
+              "updated_at" => room_1.updated_at.as_json
+            },
+            {
+              "created_at" => room_3.created_at.as_json,
+              "id" => room_3.id,
+              "locked" => room_3.locked?,
+              "membership_limit" => room_3.membership_limit,
+              "name" => room_3.name,
+              "topic" => room_3.topic,
+              "updated_at" => room_3.updated_at.as_json
+            }
+          ]
+        )
+      end
+    end
+
+    context "when unauthenticated" do
+      it "requires authentication" do
+        get "/rooms.json"
+
+        expect(response.status).to eq(401)
+      end
+    end
   end
 
   describe "GET /room/:id" do
