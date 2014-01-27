@@ -19,8 +19,8 @@ class RoomsController < ApplicationController
   end
 
   def join
-    if @room.unlocked? || current_user.admin?
-      current_user.presences.find_or_create_by!(room_id: @room.id)
+    if current_user.admin? || @room.unlocked?
+      current_user.join_room(@room)
       head :ok
     else
       head :locked
