@@ -4,6 +4,7 @@ gem "rails", "~> 4.0.2"
 
 gem "pg", "~> 0.17"
 
+gem "bcrypt-ruby", "~> 3.1"
 gem "jbuilder", "~> 2.0"
 
 group :development, :test do

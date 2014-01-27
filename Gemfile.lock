@@ -27,6 +27,7 @@ GEM
       tzinfo (~> 0.3.37)
     arel (4.0.1)
     atomic (1.1.14)
+    bcrypt-ruby (3.1.2)
     builder (3.1.4)
     coderay (1.1.0)
     database_cleaner (1.2.0)
@@ -107,6 +108,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bcrypt-ruby (~> 3.1)
   database_cleaner (~> 1.2)
   factory_girl_rails (~> 4.3)
   jbuilder (~> 2.0)
