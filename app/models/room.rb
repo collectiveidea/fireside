@@ -27,4 +27,8 @@ class Room < ActiveRecord::Base
   def unlock
     update(locked: false)
   end
+
+  def unlocked?
+    !locked?
+  end
 end
