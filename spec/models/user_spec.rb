@@ -14,4 +14,17 @@ describe User do
       expect(query["s"]).to eq("55")
     end
   end
+
+  describe "#set_api_auth_token" do
+    it "is set on creation" do
+      user = create(:user, name: "John", api_auth_token: nil)
+
+      token = user.api_auth_token
+      expect(token).to be_present
+
+      user.update!(name: "Jane")
+
+      expect(user.api_auth_token).to eq(token)
+    end
+  end
 end
