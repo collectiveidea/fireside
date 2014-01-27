@@ -19,6 +19,10 @@ class User < ActiveRecord::Base
     presences.find_or_create_by!(room_id: room.id)
   end
 
+  def leave_room(room)
+    presences.where(room_id: room.id).destroy_all
+  end
+
   private
 
   def set_api_auth_token
