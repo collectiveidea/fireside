@@ -182,39 +182,98 @@ describe "Room Requests" do
     let!(:room) { create(:room) }
 
     context "when authenticated" do
-      let!(:user) { create(:user) }
-
       before do
         authenticate(user.api_auth_token)
       end
 
-      context "when the user is in the room" do
-        before do
-          user.rooms << room
+      context "as an admin" do
+        let!(:user) { create(:user, :admin) }
+
+        context "when the user is in the room" do
+          before do
+            user.rooms << room
+          end
+
+          it "does nothing" do
+            expect {
+              post "/room/#{room.id}/join.json"
+            }.not_to change {
+              room.users.count
+            }
+
+            expect(response.status).to eq(200)
+            expect(response.body).to be_blank
+          end
         end
 
-        it "does nothing" do
-          expect {
-            post "/room/#{room.id}/join.json"
-          }.not_to change {
-            room.users.count
-          }
+        context "when the user is not in the room" do
+          it "adds the current user to the room" do
+            expect {
+              post "/room/#{room.id}/join.json"
+            }.to change {
+              room.users.count
+            }.from(0).to(1)
 
-          expect(response.status).to eq(200)
-          expect(response.body).to be_blank
+            expect(response.status).to eq(200)
+            expect(response.body).to be_blank
+          end
+        end
+
+        context "when the room is locked" do
+          let!(:room) { create(:room, :locked) }
+
+          it "allows access to the room" do
+            expect {
+              post "/room/#{room.id}/join.json"
+            }.to change {
+              room.users.count
+            }.from(0).to(1)
+
+            expect(response.status).to eq(200)
+            expect(response.body).to be_blank
+          end
         end
       end
 
-      context "when the user is not in the room" do
-        it "adds the current user to the room" do
-          expect {
-            post "/room/#{room.id}/join.json"
-          }.to change {
-            room.users.count
-          }.from(0).to(1)
+      context "as a member" do
+        let!(:user) { create(:user) }
 
-          expect(response.status).to eq(200)
-          expect(response.body).to be_blank
+        context "when the user is in the room" do
+          before do
+            user.rooms << room
+          end
+
+          it "does nothing" do
+            expect {
+              post "/room/#{room.id}/join.json"
+            }.not_to change {
+              room.users.count
+            }
+
+            expect(response.status).to eq(200)
+            expect(response.body).to be_blank
+          end
+        end
+
+        context "when the user is not in the room" do
+          it "adds the current user to the room" do
+            expect {
+              post "/room/#{room.id}/join.json"
+            }.to change {
+              room.users.count
+            }.from(0).to(1)
+
+            expect(response.status).to eq(200)
+            expect(response.body).to be_blank
+          end
+        end
+
+        context "when the room is locked" do
+          let!(:room) { create(:room, :locked) }
+
+          it "denies access to the room" do
+            pending
+          end
         end
       end
     end
@@ -307,7 +366,7 @@ describe "Room Requests" do
         expect(response.body).to be_blank
       end
 
-      it "pauses transcripts" do
+      it "flags messages as private" do
         pending
       end
     end
@@ -346,7 +405,7 @@ describe "Room Requests" do
         expect(response.body).to be_blank
       end
 
-      it "resumes transcripts" do
+      it "deletes private messsages" do
         pending
       end
     end
