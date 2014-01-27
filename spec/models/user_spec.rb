@@ -46,6 +46,35 @@ describe User do
     end
   end
 
+  describe "#leave_room" do
+    let!(:user) { create(:user) }
+    let!(:room) { create(:room) }
+
+    context "when the user is in the room" do
+      before do
+        user.rooms << room
+      end
+
+      it "removes the user from the room" do
+        expect {
+          user.leave_room(room)
+        }.to change {
+          user.rooms.count
+        }.from(1).to(0)
+      end
+    end
+
+    context "when the user is not in the room" do
+      it "does nothing" do
+        expect {
+          user.leave_room(room)
+        }.not_to change {
+          user.rooms.count
+        }
+      end
+    end
+  end
+
   describe "#set_api_auth_token" do
     it "is set on creation" do
       user = create(:user, name: "John", api_auth_token: nil)

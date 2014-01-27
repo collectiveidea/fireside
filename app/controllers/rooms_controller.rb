@@ -28,7 +28,7 @@ class RoomsController < ApplicationController
   end
 
   def leave
-    current_user.presences.where(room_id: @room.id).destroy_all
+    current_user.leave_room(@room)
     head :ok
   end
 
