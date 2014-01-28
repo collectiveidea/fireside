@@ -15,24 +15,24 @@ describe Room do
 
   describe "#lock" do
     it "sets locked to true and saves" do
-      message = create(:room, locked: false)
+      room = create(:room, locked: false)
 
       expect {
-        message.lock
+        room.lock
       }.to change {
-        message.reload.locked?
+        room.reload.locked?
       }.from(false).to(true)
     end
   end
 
   describe "#unlock" do
     it "sets locked to false and saves" do
-      message = create(:room, locked: true)
+      room = create(:room, locked: true)
 
       expect {
-        message.unlock
+        room.unlock
       }.to change {
-        message.reload.locked?
+        room.reload.locked?
       }.from(true).to(false)
     end
   end
