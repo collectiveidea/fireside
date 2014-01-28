@@ -9,6 +9,7 @@ gem "pg", "~> 0.17"
 gem "bcrypt-ruby", "~> 3.1"
 gem "email_validator", "~> 1.4"
 gem "jbuilder", "~> 2.0"
+gem "paperclip", "~> 3.5"
 
 group :development, :test do
   gem "database_cleaner", "~> 1.2"
