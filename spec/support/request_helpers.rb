@@ -6,8 +6,6 @@ module RequestHelpers
     alias_method_chain :post,   :help
     alias_method_chain :put,    :help
     alias_method_chain :delete, :help
-
-    attr_reader :format
   end
 
   module ClassMethods
@@ -38,9 +36,9 @@ module RequestHelpers
   end
 
   def set_format(format)
-    if @format = Mime::Type.lookup_by_extension(format)
-      default_headers["Accept"]       = @format.to_s
-      default_headers["Content-Type"] = @format.to_s
+    if format = Mime::Type.lookup_by_extension(format)
+      default_headers["Accept"]       = format.to_s
+      default_headers["Content-Type"] = format.to_s
     end
   end
 
@@ -50,25 +48,37 @@ module RequestHelpers
   end
 
   def get_with_help(path, headers = {})
-    get_without_help(path, nil, default_headers.merge(headers))
+    headers.reverse_merge!(default_headers)
+    get_without_help(path, nil, headers)
   end
 
   def post_with_help(path, value = nil, headers = {})
-    post_without_help(path, build_body(value), default_headers.merge(headers))
+    headers.reverse_merge!(default_headers)
+    body = build_body(value, headers)
+    post_without_help(path, body, headers)
   end
 
   def put_with_help(path, value = nil, headers = {})
-    put_without_help(path, build_body(value), default_headers.merge(headers))
+    headers.reverse_merge!(default_headers)
+    body = build_body(value, headers)
+    put_without_help(path, body, headers)
   end
 
   def delete_with_help(path, headers = {})
-    delete_without_help(path, nil, default_headers.merge(headers))
+    headers.reverse_merge!(default_headers)
+    delete_without_help(path, nil, headers)
   end
 
   private
 
-  def build_body(value)
-    format ? Content.new(value, format).to_s : value
+  def build_body(value, headers)
+    content_type = Mime::Type.lookup(headers["Content-Type"])
+
+    if content_type.json? || content_type.xml?
+      Content.new(value, content_type).to_s
+    else
+      value
+    end
   end
 end
 
