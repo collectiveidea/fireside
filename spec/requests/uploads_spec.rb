@@ -12,12 +12,11 @@ describe "Upload Requests" do
       end
 
       it "creates an upload" do
-        default_env["Content-Type"] = "multipart/form-data"
         path = Rails.root.join("spec/support/campfire.gif")
         upload = Rack::Test::UploadedFile.new(path, "image/gif")
 
         expect {
-          post "/room/#{room.id}/uploads.json", upload: upload
+          post "/room/#{room.id}/uploads.json", { upload: upload }, { "Content-Type" => "multipart/form-data" }
         }.to change {
           Upload.count
         }.from(0).to(1)
