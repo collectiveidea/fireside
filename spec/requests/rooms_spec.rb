@@ -1,7 +1,7 @@
 require "spec_helper"
 
 describe "Room Requests" do
-  using_json_and_xml do
+  with_formats(:json, :xml) do
     describe "GET /rooms" do
       let!(:room_1) { create(:room, created_at: 2.days.ago) }
       let!(:room_2) { create(:room, :locked, created_at: 1.day.ago) }

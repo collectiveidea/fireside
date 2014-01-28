@@ -11,10 +11,14 @@ module RequestHelpers
   end
 
   module ClassMethods
-    def using_json_and_xml(&block)
-      %w(json xml).each do |format|
-        context("using #{format.upcase}", format: format, &block)
+    def with_formats(*formats, &block)
+      formats.each do |format|
+        with_format(format, &block)
       end
+    end
+
+    def with_format(format, &block)
+      context("using #{format.upcase}", format: format, &block)
     end
   end
 
