@@ -409,7 +409,18 @@ describe "Room Requests" do
       end
 
       it "deletes private messsages" do
-        pending
+        message_1 = create(:message, room: room)
+        message_2 = create(:message, room: room)
+        create(:message, :private, room: room)
+        create(:message, :private, room: room)
+
+        expect {
+          post "/room/#{room.id}/unlock.json"
+        }.to change {
+          room.messages.count
+        }.from(4).to(2)
+
+        expect(room.messages).to match_array([message_1, message_2])
       end
     end
 

@@ -39,6 +39,7 @@ class RoomsController < ApplicationController
 
   def unlock
     @room.unlock
+    @room.clean
     head :ok
   end
 
