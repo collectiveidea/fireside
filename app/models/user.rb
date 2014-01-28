@@ -12,6 +12,8 @@ class User < ActiveRecord::Base
 
   before_create :set_api_auth_token
 
+  alias_attribute :email_address, :email
+
   def avatar_url
     GRAVATAR_URL_TEMPLATE % gravatar_hash
   end
