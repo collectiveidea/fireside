@@ -1,4 +1,5 @@
 /.bundle
 /config/database.yml
 /log/*.log
+/public/system
 /tmp
