@@ -1,7 +1,7 @@
 require "spec_helper"
 
 describe "User Requests" do
-  using_json_and_xml do
+  with_formats(:json, :xml) do
     describe "GET /users/:id" do
       let!(:user) { create(:user, :admin) }
 
