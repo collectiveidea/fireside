@@ -6,5 +6,9 @@ FactoryGirl.define do
     trait :starred do
       starred true
     end
+
+    trait :private do
+      private true
+    end
   end
 end

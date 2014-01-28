@@ -31,4 +31,8 @@ class Room < ActiveRecord::Base
   def unlocked?
     !locked?
   end
+
+  def clean
+    messages.where(private: true).destroy_all
+  end
 end

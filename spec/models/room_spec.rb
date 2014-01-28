@@ -46,4 +46,22 @@ describe Room do
       expect(unlocked.unlocked?).to be_true
     end
   end
+
+  describe "#clean" do
+    it "destroys all private messages" do
+      room = create(:room)
+      message_1 = create(:message, room: room)
+      create(:message, :private, room: room)
+      message_3 = create(:message, room: room)
+      create(:message, :private, room: room)
+
+      expect {
+        room.clean
+      }.to change {
+        room.messages.count
+      }.from(4).to(2)
+
+      expect(room.messages).to match_array([message_1, message_3])
+    end
+  end
 end
