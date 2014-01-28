@@ -26,5 +26,7 @@ module Fireside
     # config.i18n.default_locale = :de
 
     config.assets.enabled = false
+
+    config.i18n.enforce_available_locales = true
   end
 end
