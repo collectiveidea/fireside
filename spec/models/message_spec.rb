@@ -14,34 +14,62 @@ describe Message do
   end
 
   describe ".create_for_room" do
-    it "creates a message for the given room" do
-      room = create(:room)
+    let(:room) { create(:room) }
 
-      expect {
-        Message.create_for_room(room, body: "Hello, world!")
-      }.to change {
-        Message.count
-      }.from(0).to(1)
+    context "when successful" do
+      it "creates a message for the given room" do
+        expect {
+          Message.create_for_room(room, body: "Hello, world!")
+        }.to change {
+          Message.count
+        }.from(0).to(1)
 
-      message = Message.last
+        message = Message.last
 
-      expect(message.body).to eq("Hello, world!")
-      expect(message).not_to be_private
+        expect(message.body).to eq("Hello, world!")
+        expect(message).not_to be_private
+      end
+
+      it "creates a private message for a locked room" do
+        room = create(:room, :locked)
+
+        expect {
+          Message.create_for_room(room, body: "Hello, world!")
+        }.to change {
+          Message.count
+        }.from(0).to(1)
+
+        message = Message.last
+
+        expect(message.body).to eq("Hello, world!")
+        expect(message).to be_private
+      end
+
+      it "returns the persisted message" do
+        message = Message.create_for_room(room, body: "Hello, world!")
+
+        expect(message).to be_a(Message)
+        expect(message).to be_persisted
+        expect(message.body).to eq("Hello, world!")
+      end
     end
 
-    it "creates a private message for a locked room" do
-      room = create(:room, :locked)
+    context "when unsuccessful" do
+      it "doesn't create a message" do
+        expect {
+          Message.create_for_room(room, {})
+        }.not_to change {
+          Message.count
+        }
+      end
 
-      expect {
-        Message.create_for_room(room, body: "Hello, world!")
-      }.to change {
-        Message.count
-      }.from(0).to(1)
+      it "returns the new message" do
+        message = Message.create_for_room(room, body: " ")
 
-      message = Message.last
-
-      expect(message.body).to eq("Hello, world!")
-      expect(message).to be_private
+        expect(message).to be_a(Message)
+        expect(message).not_to be_persisted
+        expect(message.body).to eq(" ")
+      end
     end
   end
 
