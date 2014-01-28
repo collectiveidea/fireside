@@ -28,5 +28,7 @@ module Fireside
     config.assets.enabled = false
 
     config.i18n.enforce_available_locales = true
+
+    config.middleware.insert_after ActionDispatch::ParamsParser, ActionDispatch::XmlParamsParser
   end
 end
