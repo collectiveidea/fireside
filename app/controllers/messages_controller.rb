@@ -8,7 +8,20 @@ class MessagesController < ApplicationController
 
   def create
     @message = Message.create_for_room(@room, message_params)
-    render :show, status: :created
+
+    if @message.persisted?
+      render :show, status: :created
+    else
+      respond_to do |format|
+        format.json do
+          render json: @message.errors, status: :unprocessable_entity
+        end
+
+        format.xml do
+          render xml: @message.errors, status: :unprocessable_entity
+        end
+      end
+    end
   end
 
   def star

@@ -56,56 +56,86 @@ describe "Message Requests" do
         authenticate(user.api_auth_token)
       end
 
-      context "when the room is unlocked" do
-        it "creates a message" do
-          expect {
-            post "/room/#{room.id}/speak.json", %({"body":"Hello, world!"})
-          }.to change {
-            Message.count
-          }.from(0).to(1)
+      context "when successful" do
+        context "when the room is unlocked" do
+          it "creates a message" do
+            expect {
+              post "/room/#{room.id}/speak.json", %({"body":"Hello, world!"})
+            }.to change {
+              Message.count
+            }.from(0).to(1)
 
-          message = Message.last
+            message = Message.last
 
-          expect(message.body).to eq("Hello, world!")
-          expect(message.room_id).to eq(room.id)
-          expect(message).not_to be_private
+            expect(message.body).to eq("Hello, world!")
+            expect(message.room_id).to eq(room.id)
+            expect(message).not_to be_private
 
-          expect(response.status).to eq(201)
-          expect(response.json).to eq(
-            "message" => {
-              "body" => message.body,
-              "created_at" => message.created_at.as_json,
-              "id" => message.id,
-              "room_id" => message.room_id
-            }
-          )
+            expect(response.status).to eq(201)
+            expect(response.json).to eq(
+              "message" => {
+                "body" => message.body,
+                "created_at" => message.created_at.as_json,
+                "id" => message.id,
+                "room_id" => message.room_id
+              }
+            )
+          end
+        end
+
+        context "when the room is locked" do
+          let!(:room) { create(:room, :locked) }
+
+          it "creates a private message" do
+            expect {
+              post "/room/#{room.id}/speak.json", %({"body":"Hello, world!"})
+            }.to change {
+              Message.count
+            }.from(0).to(1)
+
+            message = Message.last
+
+            expect(message.body).to eq("Hello, world!")
+            expect(message.room_id).to eq(room.id)
+            expect(message).to be_private
+
+            expect(response.status).to eq(201)
+            expect(response.json).to eq(
+              "message" => {
+                "body" => message.body,
+                "created_at" => message.created_at.as_json,
+                "id" => message.id,
+                "room_id" => message.room_id
+              }
+            )
+          end
         end
       end
 
-      context "when the room is locked" do
-        let!(:room) { create(:room, :locked) }
-
-        it "creates a private message" do
+      context "when no body is provided" do
+        it "is a bad request" do
           expect {
-            post "/room/#{room.id}/speak.json", %({"body":"Hello, world!"})
-          }.to change {
+            post "/room/#{room.id}/speak.json", %({})
+          }.not_to change {
             Message.count
-          }.from(0).to(1)
+          }
 
-          message = Message.last
+          expect(response.status).to eq(400)
+          expect(response.body).to be_blank
+        end
+      end
 
-          expect(message.body).to eq("Hello, world!")
-          expect(message.room_id).to eq(room.id)
-          expect(message).to be_private
+      context "when a blank body is given" do
+        it "returns validation errors" do
+          expect {
+            post "/room/#{room.id}/speak.json", %({"body":" "})
+          }.not_to change {
+            Message.count
+          }
 
-          expect(response.status).to eq(201)
+          expect(response.status).to eq(422)
           expect(response.json).to eq(
-            "message" => {
-              "body" => message.body,
-              "created_at" => message.created_at.as_json,
-              "id" => message.id,
-              "room_id" => message.room_id
-            }
+            "body" => ["can't be blank"]
           )
         end
       end
