@@ -13,6 +13,38 @@ describe Message do
     end
   end
 
+  describe ".create_for_room" do
+    it "creates a message for the given room" do
+      room = create(:room)
+
+      expect {
+        Message.create_for_room(room, body: "Hello, world!")
+      }.to change {
+        Message.count
+      }.from(0).to(1)
+
+      message = Message.last
+
+      expect(message.body).to eq("Hello, world!")
+      expect(message).not_to be_private
+    end
+
+    it "creates a private message for a locked room" do
+      room = create(:room, :locked)
+
+      expect {
+        Message.create_for_room(room, body: "Hello, world!")
+      }.to change {
+        Message.count
+      }.from(0).to(1)
+
+      message = Message.last
+
+      expect(message.body).to eq("Hello, world!")
+      expect(message).to be_private
+    end
+  end
+
   describe "#star" do
     it "sets starred to true and saves" do
       message = create(:message, starred: false)

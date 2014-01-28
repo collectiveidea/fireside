@@ -7,7 +7,7 @@ class MessagesController < ApplicationController
   end
 
   def create
-    @message = @room.messages.create!(message_params)
+    @message = Message.create_for_room(@room, message_params)
     render :show, status: :created
   end
 

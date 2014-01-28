@@ -372,10 +372,6 @@ describe "Room Requests" do
         expect(response.status).to eq(200)
         expect(response.body).to be_blank
       end
-
-      it "flags messages as private" do
-        pending
-      end
     end
 
     context "when unauthenticated" do

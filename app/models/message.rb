@@ -7,6 +7,10 @@ class Message < ActiveRecord::Base
     order(:created_at)
   end
 
+  def self.create_for_room(room, attributes)
+    create(attributes.merge(room_id: room.id, private: room.locked?))
+  end
+
   def star
     update(starred: true)
   end
