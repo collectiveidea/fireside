@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140128001135) do
+ActiveRecord::Schema.define(version: 20140128034610) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -52,6 +52,21 @@ ActiveRecord::Schema.define(version: 20140128001135) do
   add_index "rooms", ["active_token_value"], name: "index_rooms_on_active_token_value", unique: true, using: :btree
   add_index "rooms", ["created_at"], name: "index_rooms_on_created_at", using: :btree
   add_index "rooms", ["name"], name: "index_rooms_on_name", unique: true, using: :btree
+
+  create_table "uploads", force: true do |t|
+    t.integer  "user_id"
+    t.integer  "room_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "file_file_name"
+    t.string   "file_content_type"
+    t.integer  "file_file_size"
+    t.datetime "file_updated_at"
+  end
+
+  add_index "uploads", ["created_at"], name: "index_uploads_on_created_at", using: :btree
+  add_index "uploads", ["room_id"], name: "index_uploads_on_room_id", using: :btree
+  add_index "uploads", ["user_id"], name: "index_uploads_on_user_id", using: :btree
 
   create_table "users", force: true do |t|
     t.string   "name"

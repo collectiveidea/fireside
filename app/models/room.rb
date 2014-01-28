@@ -2,6 +2,7 @@ class Room < ActiveRecord::Base
   has_many :messages, inverse_of: :room, dependent: :nullify
   has_many :presences, inverse_of: :room, dependent: :destroy
   has_many :users, through: :presences
+  has_many :uploads, inverse_of: :room, dependent: :destroy
 
   validates :name, presence: true, uniqueness: true
   validates :active_token_value, uniqueness: { allow_nil: true }, strict: true

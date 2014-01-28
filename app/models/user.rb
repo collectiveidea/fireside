@@ -5,6 +5,7 @@ class User < ActiveRecord::Base
 
   has_many :presences, inverse_of: :user, dependent: :destroy
   has_many :rooms, through: :presences
+  has_many :uploads, inverse_of: :user, dependent: :nullify
 
   validates :name, presence: true
   validates :email, presence: true, email: true, uniqueness: true
