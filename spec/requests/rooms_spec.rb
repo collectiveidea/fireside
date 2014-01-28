@@ -155,7 +155,7 @@ describe "Room Requests" do
 
       it "updates the room" do
         expect {
-          put "/room/#{room.id}.json", %({"topic":"Goodbye."})
+          put "/room/#{room.id}.json", "room" => { "topic" => "Goodbye." }
         }.to change {
           room.reload.topic
         }.from("Hello!").to("Goodbye.")
@@ -168,7 +168,7 @@ describe "Room Requests" do
     context "when unauthenticated" do
       it "requires authentication" do
         expect {
-          put "/room/#{room.id}.json", %({"topic":"Goodbye."})
+          put "/room/#{room.id}.json", "room" => { "topic" => "Goodbye." }
         }.not_to change {
           room.reload.topic
         }
