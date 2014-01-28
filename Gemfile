@@ -6,6 +6,7 @@ gem "rails", "~> 4.0.2"
 
 gem "pg", "~> 0.17"
 
+gem "actionpack-xml_parser", "~> 1.0"
 gem "bcrypt-ruby", "~> 3.1"
 gem "email_validator", "~> 1.4"
 gem "jbuilder", "~> 2.0"
