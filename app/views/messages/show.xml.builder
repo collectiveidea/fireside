@@ -3,4 +3,5 @@ xml.message do
   xml.tag! "created-at", @message.created_at, type: "datetime"
   xml.id @message.id, type: "integer"
   xml.room_id @message.room_id, type: "integer"
+  xml.user_id @message.user_id, type: "integer"
 end

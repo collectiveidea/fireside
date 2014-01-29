@@ -7,7 +7,7 @@ class MessagesController < ApplicationController
   end
 
   def create
-    @message = Message.create_for_room(@room, message_params)
+    @message = current_user.messages.create_for_room(@room, message_params)
 
     if @message.persisted?
       render :show, status: :created

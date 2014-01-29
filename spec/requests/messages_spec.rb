@@ -25,13 +25,15 @@ describe "Message Requests" do
                 "body" => old_message.body,
                 "created_at" => old_message.created_at,
                 "id" => old_message.id,
-                "room_id" => old_message.room_id
+                "room_id" => old_message.room_id,
+                "user_id" => old_message.user_id
               },
               {
                 "body" => new_message.body,
                 "created_at" => new_message.created_at,
                 "id" => new_message.id,
-                "room_id" => new_message.room_id
+                "room_id" => new_message.room_id,
+                "user_id" => new_message.user_id
               }
             ]
           )
@@ -69,6 +71,7 @@ describe "Message Requests" do
               message = Message.last
 
               expect(message.body).to eq("Hello, world!")
+              expect(message.user_id).to eq(user.id)
               expect(message.room_id).to eq(room.id)
               expect(message).not_to be_private
 
@@ -78,7 +81,8 @@ describe "Message Requests" do
                   "body" => message.body,
                   "created_at" => message.created_at,
                   "id" => message.id,
-                  "room_id" => message.room_id
+                  "room_id" => message.room_id,
+                  "user_id" => message.user_id
                 }
               )
             end
@@ -97,6 +101,7 @@ describe "Message Requests" do
               message = Message.last
 
               expect(message.body).to eq("Hello, world!")
+              expect(message.user_id).to eq(user.id)
               expect(message.room_id).to eq(room.id)
               expect(message).to be_private
 
@@ -106,7 +111,8 @@ describe "Message Requests" do
                   "body" => message.body,
                   "created_at" => message.created_at,
                   "id" => message.id,
-                  "room_id" => message.room_id
+                  "room_id" => message.room_id,
+                  "user_id" => message.user_id
                 }
               )
             end

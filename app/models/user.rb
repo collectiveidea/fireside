@@ -3,6 +3,7 @@ class User < ActiveRecord::Base
 
   has_secure_password
 
+  has_many :messages, inverse_of: :user, dependent: :nullify
   has_many :presences, inverse_of: :user, dependent: :destroy
   has_many :rooms, through: :presences
   has_many :uploads, inverse_of: :user, dependent: :nullify
