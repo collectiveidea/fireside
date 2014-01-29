@@ -18,5 +18,6 @@ OpenChat::Application.routes.draw do
   post   "messages/:id/star" => "messages#star"
   delete "messages/:id/star" => "messages#unstar"
 
+  get  "room/:room_id/uploads" => "uploads#index"
   post "room/:room_id/uploads" => "uploads#create"
 end

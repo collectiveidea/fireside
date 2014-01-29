@@ -2,9 +2,60 @@ require "spec_helper"
 
 describe "Upload Requests" do
   with_formats(:json, :xml) do
+    describe "GET /room/:room_id/uploads" do
+      let!(:room) { create(:room) }
+      let!(:old_upload) { create(:upload, room: room) }
+      let!(:new_upload) { create(:upload, room: room) }
+      let!(:other_upload) { create(:upload) }
+
+      context "when authenticated" do
+        let!(:user) { create(:user) }
+
+        before do
+          authenticate(user.api_auth_token)
+        end
+
+        it "lists uploads old to new" do
+          get "/room/#{room.id}/uploads"
+
+          expect(response.status).to eq(200)
+          expect(response.content).to eq(
+            "uploads" => [
+              {
+                "byte_size" => old_upload.byte_size,
+                "content_type" => old_upload.content_type,
+                "created_at" => old_upload.created_at,
+                "id" => old_upload.id,
+                "name" => old_upload.name,
+                "room_id" => old_upload.room_id,
+                "user_id" => old_upload.user_id
+              },
+              {
+                "byte_size" => new_upload.byte_size,
+                "content_type" => new_upload.content_type,
+                "created_at" => new_upload.created_at,
+                "id" => new_upload.id,
+                "name" => new_upload.name,
+                "room_id" => new_upload.room_id,
+                "user_id" => new_upload.user_id
+              }
+            ]
+          )
+        end
+      end
+
+      context "when unauthenticated" do
+        it "requires authentication" do
+          get "/room/#{room.id}/recent"
+
+          expect(response.status).to eq(401)
+        end
+      end
+    end
+
     describe "POST /room/:room_id/uploads" do
       let!(:room) { create(:room) }
-      let!(:upload) {
+      let!(:file) {
         path = Rails.root.join("spec/support/campfire.gif")
         Rack::Test::UploadedFile.new(path, "image/gif")
       }
@@ -18,7 +69,7 @@ describe "Upload Requests" do
 
         it "creates an upload" do
           expect {
-            post "/room/#{room.id}/uploads", { upload: upload }, { "Content-Type" => "multipart/form-data" }
+            post "/room/#{room.id}/uploads", { upload: file }, { "Content-Type" => "multipart/form-data" }
           }.to change {
             Upload.count
           }.from(0).to(1)
@@ -49,7 +100,7 @@ describe "Upload Requests" do
       context "when unauthenticated" do
         it "requires authentication" do
           expect {
-            post "/room/#{room.id}/uploads", { upload: upload }, { "Content-Type" => "multipart/form-data" }
+            post "/room/#{room.id}/uploads", { upload: file }, { "Content-Type" => "multipart/form-data" }
           }.not_to change {
             Upload.count
           }
