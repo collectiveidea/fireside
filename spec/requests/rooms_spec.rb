@@ -106,11 +106,13 @@ describe "Room Requests" do
 
     describe "GET /room/:id" do
       let!(:room) { create(:room, :with_guest_access, :locked) }
+      let!(:other_user) { create(:user) }
 
       context "when authenticated" do
         let!(:user) { create(:user) }
 
         before do
+          room.users << other_user
           authenticate(user.api_auth_token)
         end
 
@@ -129,7 +131,17 @@ describe "Room Requests" do
               "name" => room.name,
               "open_to_guests" => room.open_to_guests?,
               "topic" => room.topic,
-              "updated_at" => room.updated_at
+              "updated_at" => room.updated_at,
+              "users" => [
+                {
+                  "admin" => other_user.admin?,
+                  "avatar_url" => other_user.avatar_url,
+                  "created_at" => other_user.created_at,
+                  "email_address" => other_user.email,
+                  "id" => other_user.id,
+                  "name" => other_user.name
+                }
+              ]
             }
           )
         end

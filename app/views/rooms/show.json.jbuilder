@@ -9,4 +9,7 @@ json.room do
   json.open_to_guests @room.open_to_guests?
   json.topic @room.topic
   json.updated_at @room.updated_at
+  json.users @room.users do |user|
+    json.partial! user
+  end
 end

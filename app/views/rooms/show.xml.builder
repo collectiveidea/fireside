@@ -9,4 +9,11 @@ xml.room do
   xml.tag! "open-to-guests", @room.open_to_guests?, type: "boolean"
   xml.topic @room.topic
   xml.tag! "updated-at", @room.updated_at, type: "datetime"
+  xml.users type: "array" do
+    @room.users.each do |user|
+      xml.user do
+        xml << render(user)
+      end
+    end
+  end
 end
