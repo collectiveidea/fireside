@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140129023859) do
+ActiveRecord::Schema.define(version: 20140129031722) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,12 +23,14 @@ ActiveRecord::Schema.define(version: 20140129023859) do
     t.boolean  "starred",    default: false, null: false
     t.boolean  "private",    default: false, null: false
     t.integer  "user_id"
+    t.string   "type"
   end
 
   add_index "messages", ["created_at"], name: "index_messages_on_created_at", using: :btree
   add_index "messages", ["private"], name: "index_messages_on_private", using: :btree
   add_index "messages", ["room_id"], name: "index_messages_on_room_id", using: :btree
   add_index "messages", ["starred"], name: "index_messages_on_starred", using: :btree
+  add_index "messages", ["type"], name: "index_messages_on_type", using: :btree
   add_index "messages", ["user_id"], name: "index_messages_on_user_id", using: :btree
 
   create_table "presences", force: true do |t|
