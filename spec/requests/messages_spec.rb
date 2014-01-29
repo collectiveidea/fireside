@@ -26,6 +26,7 @@ describe "Message Requests" do
                 "created_at" => old_message.created_at,
                 "id" => old_message.id,
                 "room_id" => old_message.room_id,
+                "type" => old_message.type,
                 "user_id" => old_message.user_id
               },
               {
@@ -33,6 +34,7 @@ describe "Message Requests" do
                 "created_at" => new_message.created_at,
                 "id" => new_message.id,
                 "room_id" => new_message.room_id,
+                "type" => new_message.type,
                 "user_id" => new_message.user_id
               }
             ]
@@ -82,6 +84,7 @@ describe "Message Requests" do
                   "created_at" => message.created_at,
                   "id" => message.id,
                   "room_id" => message.room_id,
+                  "type" => message.type,
                   "user_id" => message.user_id
                 }
               )
@@ -112,6 +115,7 @@ describe "Message Requests" do
                   "created_at" => message.created_at,
                   "id" => message.id,
                   "room_id" => message.room_id,
+                  "type" => message.type,
                   "user_id" => message.user_id
                 }
               )

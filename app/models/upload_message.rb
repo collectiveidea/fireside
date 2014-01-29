@@ -1,0 +1,2 @@
+class UploadMessage < Message
+end

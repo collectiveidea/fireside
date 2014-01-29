@@ -13,19 +13,22 @@ describe Message do
     end
   end
 
-  describe ".create_for_room" do
-    let(:room) { create(:room) }
+  describe ".post" do
+    let!(:user) { create(:user) }
+    let!(:room) { create(:room) }
 
     context "when successful" do
-      it "creates a message for the given room" do
+      it "creates a message for the given user and room" do
         expect {
-          Message.create_for_room(room, body: "Hello, world!")
+          Message.post(user, room, body: "Hello, world!")
         }.to change {
           Message.count
         }.from(0).to(1)
 
         message = Message.last
 
+        expect(message.user_id).to eq(user.id)
+        expect(message.room_id).to eq(room.id)
         expect(message.body).to eq("Hello, world!")
         expect(message).not_to be_private
       end
@@ -34,37 +37,71 @@ describe Message do
         room = create(:room, :locked)
 
         expect {
-          Message.create_for_room(room, body: "Hello, world!")
+          Message.post(user, room, body: "Hello, world!")
         }.to change {
           Message.count
         }.from(0).to(1)
 
         message = Message.last
 
+        expect(message.user_id).to eq(user.id)
+        expect(message.room_id).to eq(room.id)
         expect(message.body).to eq("Hello, world!")
         expect(message).to be_private
       end
 
       it "returns the persisted message" do
-        message = Message.create_for_room(room, body: "Hello, world!")
+        message = Message.post(user, room, body: "Hello, world!")
 
         expect(message).to be_a(Message)
         expect(message).to be_persisted
+        expect(message.user_id).to eq(user.id)
+        expect(message.room_id).to eq(room.id)
         expect(message.body).to eq("Hello, world!")
+      end
+
+      it "creates a paste message if requested" do
+        message = Message.post(user, room, body: "Hello, world!", type: "PasteMessage")
+
+        expect(message.reload).to be_a(PasteMessage)
+      end
+
+      it "creates a paste message by default with a newline" do
+        message = Message.post(user, room, body: "Hello…\nworld!")
+
+        expect(message.reload).to be_a(PasteMessage)
+      end
+
+      it "creates a text message if requested" do
+        message = Message.post(user, room, body: "Hello…\nworld!", type: "TextMessage")
+
+        expect(message.reload).to be_a(TextMessage)
+      end
+
+      it "creates a text message by default" do
+        message = Message.post(user, room, body: "Hello, world!")
+
+        expect(message.reload).to be_a(TextMessage)
+      end
+
+      it "converts other types to text messages" do
+        message = Message.post(user, room, body: "Hello, world!", type: "UploadMessage")
+
+        expect(message.reload).to be_a(TextMessage)
       end
     end
 
     context "when unsuccessful" do
       it "doesn't create a message" do
         expect {
-          Message.create_for_room(room, {})
+          Message.post(user, room, {})
         }.not_to change {
           Message.count
         }
       end
 
       it "returns the new message" do
-        message = Message.create_for_room(room, body: " ")
+        message = Message.post(user, room, body: " ")
 
         expect(message).to be_a(Message)
         expect(message).not_to be_persisted
