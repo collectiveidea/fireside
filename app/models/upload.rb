@@ -4,6 +4,10 @@ class Upload < ActiveRecord::Base
 
   has_attached_file :file
 
+  def self.old_to_new
+    order(:created_at)
+  end
+
   def byte_size
     file.size
   end
