@@ -1,5 +1,5 @@
 /.bundle
 /config/database.yml
 /log/*.log
-/public/system
+/public/files
 /tmp
