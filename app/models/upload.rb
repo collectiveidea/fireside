@@ -2,7 +2,7 @@ class Upload < ActiveRecord::Base
   belongs_to :user, inverse_of: :uploads
   belongs_to :room, inverse_of: :uploads
 
-  has_attached_file :file
+  has_attached_file :file, url: "/files/:fingerprint.:extension"
 
   def self.old_to_new
     order(:created_at)
