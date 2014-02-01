@@ -11,5 +11,9 @@ FactoryGirl.define do
     trait :private do
       private true
     end
+
+    factory :text_message, class: TextMessage
+
+    factory :paste_message, class: PasteMessage
   end
 end
