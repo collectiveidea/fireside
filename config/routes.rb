@@ -15,6 +15,8 @@ Fireside::Application.routes.draw do
   get  "room/:room_id/recent" => "messages#index"
   post "room/:room_id/speak"  => "messages#create"
 
+  get "room/:room_id/live" => "live_messages#index"
+
   post   "messages/:id/star" => "messages#star"
   delete "messages/:id/star" => "messages#unstar"
 
