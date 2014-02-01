@@ -69,6 +69,8 @@ GEM
       coderay (~> 1.0)
       method_source (~> 0.8)
       slop (~> 3.4)
+    puma (2.7.1)
+      rack (>= 1.1, < 2.0)
     rack (1.5.2)
     rack-test (0.6.2)
       rack (>= 1.0)
@@ -130,5 +132,6 @@ DEPENDENCIES
   paperclip (~> 3.5)
   pg (~> 0.17)
   pry
+  puma (~> 2.7)
   rails (~> 4.0.2)
   rspec-rails (~> 2.14)
