@@ -40,4 +40,25 @@ class Room < ActiveRecord::Base
   def upload_file_for_user(file, user)
     uploads.create!(file: file, user: user)
   end
+
+  def on_message
+    connection = self.class.connection
+    connection.execute("LISTEN #{channel}")
+    pg = connection.raw_connection
+
+    loop do
+      pg.wait_for_notify do |channel, pid, payload_string|
+        payload = Message::Payload.load(payload_string)
+        yield payload
+      end
+    end
+  ensure
+    connection.execute("UNLISTEN #{channel}")
+  end
+
+  private
+
+  def channel
+    "room_#{id}"
+  end
 end
