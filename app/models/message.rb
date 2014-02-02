@@ -132,17 +132,25 @@ end
 
 class EnterMessage < Message
   validates :user_id, presence: true, strict: true
+
+  def self.post(user, room)
+    create!(user: user, room: room, private: room.locked?)
+  end
 end
 
 class LeaveMessage < Message
   validates :user_id, presence: true, strict: true
+
+  def self.post(user, room)
+    create!(user: user, room: room, private: room.locked?)
+  end
 end
 
 class LockMessage < Message
   validates :user_id, presence: true, strict: true
 
   def self.post(user, room)
-    create!(user: user, room: room)
+    create!(user: user, room: room, private: room.locked?)
   end
 end
 
@@ -156,7 +164,7 @@ class UnlockMessage < Message
   validates :user_id, presence: true, strict: true
 
   def self.post(user, room)
-    create!(user: user, room: room)
+    create!(user: user, room: room, private: room.locked?)
   end
 end
 

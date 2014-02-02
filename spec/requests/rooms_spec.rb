@@ -207,7 +207,7 @@ describe "Room Requests" do
               user.rooms << room
             end
 
-            it "does nothing" do
+            it "doesn't add a user to the room" do
               expect {
                 post "/room/#{room.id}/join"
               }.not_to change {
@@ -216,6 +216,14 @@ describe "Room Requests" do
 
               expect(response.status).to eq(200)
               expect(response.body).to be_blank
+            end
+
+            it "doesn't post an enter message" do
+              expect {
+                post "/room/#{room.id}/join"
+              }.not_to change {
+                Message.count
+              }
             end
           end
 
@@ -229,6 +237,20 @@ describe "Room Requests" do
 
               expect(response.status).to eq(200)
               expect(response.body).to be_blank
+            end
+
+            it "posts an enter message" do
+              expect {
+                post "/room/#{room.id}/join"
+              }.to change {
+                Message.count
+              }.by(1)
+
+              message = Message.last
+              expect(message).to be_a(EnterMessage)
+              expect(message.user_id).to eq(user.id)
+              expect(message.room_id).to eq(room.id)
+              expect(message).not_to be_private
             end
           end
 
@@ -245,6 +267,20 @@ describe "Room Requests" do
               expect(response.status).to eq(200)
               expect(response.body).to be_blank
             end
+
+            it "posts an enter message" do
+              expect {
+                post "/room/#{room.id}/join"
+              }.to change {
+                Message.count
+              }.by(1)
+
+              message = Message.last
+              expect(message).to be_a(EnterMessage)
+              expect(message.user_id).to eq(user.id)
+              expect(message.room_id).to eq(room.id)
+              expect(message).to be_private
+            end
           end
         end
 
@@ -256,7 +292,7 @@ describe "Room Requests" do
               user.rooms << room
             end
 
-            it "does nothing" do
+            it "doesn't add a user to the room" do
               expect {
                 post "/room/#{room.id}/join"
               }.not_to change {
@@ -265,6 +301,14 @@ describe "Room Requests" do
 
               expect(response.status).to eq(200)
               expect(response.body).to be_blank
+            end
+
+            it "doesn't post an enter message" do
+              expect {
+                post "/room/#{room.id}/join"
+              }.not_to change {
+                Message.count
+              }
             end
           end
 
@@ -278,6 +322,20 @@ describe "Room Requests" do
 
               expect(response.status).to eq(200)
               expect(response.body).to be_blank
+            end
+
+            it "posts an enter message" do
+              expect {
+                post "/room/#{room.id}/join"
+              }.to change {
+                Message.count
+              }.by(1)
+
+              message = Message.last
+              expect(message).to be_a(EnterMessage)
+              expect(message.user_id).to eq(user.id)
+              expect(message.room_id).to eq(room.id)
+              expect(message).not_to be_private
             end
           end
 
@@ -293,6 +351,14 @@ describe "Room Requests" do
 
               expect(response.status).to eq(423)
               expect(response.body).to be_blank
+            end
+
+            it "doesn't post an enter message" do
+              expect {
+                post "/room/#{room.id}/join"
+              }.not_to change {
+                Message.count
+              }
             end
           end
         end
@@ -336,10 +402,24 @@ describe "Room Requests" do
             expect(response.status).to eq(200)
             expect(response.body).to be_blank
           end
+
+          it "posts a leave message" do
+            expect {
+              post "/room/#{room.id}/leave"
+            }.to change {
+              Message.count
+            }.by(1)
+
+            message = Message.last
+            expect(message).to be_a(LeaveMessage)
+            expect(message.user_id).to eq(user.id)
+            expect(message.room_id).to eq(room.id)
+            expect(message).not_to be_private
+          end
         end
 
         context "when the user is not in the room" do
-          it "does nothing" do
+          it "doesn't remove a user from the room" do
             expect {
               post "/room/#{room.id}/leave"
             }.not_to change {
@@ -348,6 +428,14 @@ describe "Room Requests" do
 
             expect(response.status).to eq(200)
             expect(response.body).to be_blank
+          end
+
+          it "doesn't post a leave message" do
+            expect {
+              post "/room/#{room.id}/leave"
+            }.not_to change {
+              Message.count
+            }
           end
         end
       end
