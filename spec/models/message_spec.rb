@@ -78,6 +78,36 @@ describe Message do
         expect(message.reload).to be_a(TextMessage)
       end
 
+      it "creates a sound message by default for a valid sound" do
+        message = Message.post(user, room, body: "/play tmyk")
+
+        expect(message.reload).to be_a(SoundMessage)
+      end
+
+      it "creates a text message for an invalid sound" do
+        message = Message.post(user, room, body: "/play tlyk")
+
+        expect(message.reload).to be_a(TextMessage)
+      end
+
+      it "creates a text message when requested for a valid sound" do
+        message = Message.post(user, room, body: "/play tmyk", type: "TextMessage")
+
+        expect(message.reload).to be_a(TextMessage)
+      end
+
+      it "creates a tweet message for a valid tweet URL" do
+        message = Message.post(user, room, body: "https://twitter.com/StayPuft/status/428306266306269184")
+
+        expect(message.reload).to be_a(TweetMessage)
+      end
+
+      it "creates a text message when requested for a valid tweet URL" do
+        message = Message.post(user, room, body: "https://twitter.com/StayPuft/status/428306266306269184", type: "TextMessage")
+
+        expect(message.reload).to be_a(TextMessage)
+      end
+
       it "creates a text message by default" do
         message = Message.post(user, room, body: "Hello, world!")
 

@@ -1,2 +1,0 @@
-class TextMessage < Message
-end
