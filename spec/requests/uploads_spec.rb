@@ -1,6 +1,10 @@
 require "spec_helper"
 
 describe "Upload Requests" do
+  def upload_full_url(upload)
+    "#{https? ? "https" : "http"}://#{host}#{upload.file.url}"
+  end
+
   with_formats(:json, :xml) do
     describe "GET /room/:room_id/uploads" do
       let!(:room) { create(:room) }
@@ -25,6 +29,7 @@ describe "Upload Requests" do
                 "byte_size" => old_upload.byte_size,
                 "content_type" => old_upload.content_type,
                 "created_at" => old_upload.created_at,
+                "full_url" => upload_full_url(old_upload),
                 "id" => old_upload.id,
                 "name" => old_upload.name,
                 "room_id" => old_upload.room_id,
@@ -34,6 +39,7 @@ describe "Upload Requests" do
                 "byte_size" => new_upload.byte_size,
                 "content_type" => new_upload.content_type,
                 "created_at" => new_upload.created_at,
+                "full_url" => upload_full_url(new_upload),
                 "id" => new_upload.id,
                 "name" => new_upload.name,
                 "room_id" => new_upload.room_id,
@@ -88,6 +94,7 @@ describe "Upload Requests" do
               "byte_size" => upload.byte_size,
               "content_type" => upload.content_type,
               "created_at" => upload.created_at,
+              "full_url" => upload_full_url(upload),
               "id" => upload.id,
               "name" => upload.name,
               "room_id" => upload.room_id,
