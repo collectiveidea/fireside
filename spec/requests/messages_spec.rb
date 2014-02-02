@@ -4,9 +4,9 @@ describe "Message Requests" do
   with_formats(:json, :xml) do
     describe "GET /room/:room_id/recent" do
       let!(:room) { create(:room) }
-      let!(:old_message) { create(:message, room: room, created_at: 2.minutes.ago) }
-      let!(:new_message) { create(:message, room: room, created_at: 1.minute.ago) }
-      let!(:other_message) { create(:message) }
+      let!(:old_message) { create(:text_message, room: room, created_at: 2.minutes.ago) }
+      let!(:new_message) { create(:text_message, room: room, created_at: 1.minute.ago) }
+      let!(:other_message) { create(:text_message) }
 
       context "when authenticated" do
         let!(:user) { create(:user) }
@@ -164,7 +164,7 @@ describe "Message Requests" do
     end
 
     describe "POST /messages/:id/star" do
-      let!(:message) { create(:message) }
+      let!(:message) { create(:text_message) }
 
       context "when authenticated" do
         let!(:user) { create(:user) }
@@ -199,7 +199,7 @@ describe "Message Requests" do
     end
 
     describe "DELETE /messages/:id/star" do
-      let!(:message) { create(:message, :starred) }
+      let!(:message) { create(:text_message, :starred) }
 
       context "when authenticated" do
         let!(:user) { create(:user) }

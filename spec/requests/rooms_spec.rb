@@ -422,10 +422,10 @@ describe "Room Requests" do
         end
 
         it "deletes private messsages" do
-          message_1 = create(:message, room: room)
-          message_2 = create(:message, room: room)
-          create(:message, :private, room: room)
-          create(:message, :private, room: room)
+          message_1 = create(:text_message, room: room)
+          message_2 = create(:text_message, room: room)
+          create(:text_message, :private, room: room)
+          create(:text_message, :private, room: room)
 
           expect {
             post "/room/#{room.id}/unlock"
