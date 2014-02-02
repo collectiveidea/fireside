@@ -385,6 +385,20 @@ describe "Room Requests" do
           expect(response.status).to eq(200)
           expect(response.body).to be_blank
         end
+
+        it "posts a lock message" do
+          expect {
+            post "/room/#{room.id}/lock"
+          }.to change {
+            Message.count
+          }.by(1)
+
+          message = Message.last
+          expect(message).to be_a(LockMessage)
+          expect(message.user_id).to eq(user.id)
+          expect(message.room_id).to eq(room.id)
+          expect(message).not_to be_private
+        end
       end
 
       context "when unauthenticated" do
@@ -423,17 +437,25 @@ describe "Room Requests" do
 
         it "deletes private messsages" do
           message_1 = create(:text_message, room: room)
-          message_2 = create(:text_message, room: room)
-          create(:text_message, :private, room: room)
-          create(:text_message, :private, room: room)
+          message_2 = create(:lock_message, room: room)
+          message_3 = create(:text_message, :private, room: room)
+          message_4 = create(:text_message, :private, room: room)
 
-          expect {
-            post "/room/#{room.id}/unlock"
-          }.to change {
-            room.messages.count
-          }.from(4).to(2)
+          post "/room/#{room.id}/unlock"
 
-          expect(room.messages).to match_array([message_1, message_2])
+          messages = room.messages
+          expect(messages).to include(message_1, message_2)
+          expect(messages).not_to include(message_3, message_4)
+        end
+
+        it "posts an unlock message" do
+          post "/room/#{room.id}/unlock"
+
+          message = Message.last
+          expect(message).to be_a(UnlockMessage)
+          expect(message.user_id).to eq(user.id)
+          expect(message.room_id).to eq(room.id)
+          expect(message).not_to be_private
         end
       end
 

@@ -139,6 +139,11 @@ class LeaveMessage < Message
 end
 
 class LockMessage < Message
+  validates :user_id, presence: true, strict: true
+
+  def self.post(user, room)
+    create!(user: user, room: room)
+  end
 end
 
 class TimestampMessage < Message
@@ -148,6 +153,11 @@ class TopicChangeMessage < Message
 end
 
 class UnlockMessage < Message
+  validates :user_id, presence: true, strict: true
+
+  def self.post(user, room)
+    create!(user: user, room: room)
+  end
 end
 
 class UploadMessage < Message

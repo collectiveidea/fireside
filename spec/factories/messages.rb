@@ -44,13 +44,17 @@ FactoryGirl.define do
       user
     end
 
-    factory :lock_message, class: LockMessage
+    factory :lock_message, class: LockMessage do
+      user
+    end
 
     factory :timestamp_message, class: TimestampMessage
 
     factory :topic_change_message, class: TopicChangeMessage
 
-    factory :unlock_message, class: UnlockMessage
+    factory :unlock_message, class: UnlockMessage do
+      user
+    end
 
     factory :upload_message, class: UploadMessage do
       user

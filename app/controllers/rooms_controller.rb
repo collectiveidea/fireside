@@ -33,6 +33,7 @@ class RoomsController < ApplicationController
   end
 
   def lock
+    LockMessage.post(current_user, @room)
     @room.lock
     head :ok
   end
@@ -40,6 +41,7 @@ class RoomsController < ApplicationController
   def unlock
     @room.unlock
     @room.clean
+    UnlockMessage.post(current_user, @room)
     head :ok
   end
 
