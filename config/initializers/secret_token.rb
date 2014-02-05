@@ -9,4 +9,4 @@
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-Fireside::Application.config.secret_key_base = '7a9b10f0e5d333159565407c6d985186e4ce6beaf1fdc0922812fe7c1e1cf1f7c08ac8214d4438268922acf7c75969fae696a11754cc578d3b2cccf79de13813'
+Fireside::Application.config.secret_key_base = ENV["SECRET_KEY_BASE"]
