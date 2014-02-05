@@ -47,9 +47,8 @@ class Room < ActiveRecord::Base
     pg = connection.raw_connection
 
     loop do
-      pg.wait_for_notify do |channel, pid, payload_string|
-        payload = Message::Payload.load(payload_string)
-        yield payload
+      pg.wait_for_notify do |channel, pid, payload|
+        yield Message.from_payload(payload)
       end
     end
   ensure

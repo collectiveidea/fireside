@@ -1,30 +1,6 @@
 # encoding: utf-8
 
 class Message < ActiveRecord::Base
-  class Payload < Struct.new(:attributes)
-    def self.load(payload_string)
-      new(JSON.load(payload_string))
-    end
-
-    def self.dump(message)
-      new(message.attributes).dump
-    end
-
-    def dump
-      JSON.dump(attributes)
-    end
-
-    def starred?
-      starred
-    end
-
-    private
-
-    def method_missing(method, *)
-      attributes.fetch(method.to_s) { super }
-    end
-  end
-
   belongs_to :user, inverse_of: :messages
   belongs_to :room, inverse_of: :messages
 
@@ -62,6 +38,10 @@ class Message < ActiveRecord::Base
     false
   end
 
+  def self.from_payload(payload)
+    new(JSON.load(payload))
+  end
+
   def star
     update(starred: true)
   end
@@ -74,15 +54,15 @@ class Message < ActiveRecord::Base
 
   def notify_room
     connection = self.class.connection
-    connection.execute("NOTIFY #{channel}, #{connection.quote(payload_string)}")
+    connection.execute("NOTIFY #{channel}, #{connection.quote(payload)}")
   end
 
   def channel
     "room_#{room_id}"
   end
 
-  def payload_string
-    Payload.dump(self)
+  def payload
+    JSON.dump(attributes)
   end
 end
 
