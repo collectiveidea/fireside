@@ -24,12 +24,21 @@ FactoryGirl.define do
 
     factory :sound_message, class: SoundMessage do
       user
-      body "/play tmyk"
+      body "tmyk"
+      metadata(
+        "description" => "The More You Know :sparkles :star:"
+      )
     end
 
     factory :tweet_message, class: TweetMessage do
       user
-      body "https://twitter.com/StayPuft/status/428306266306269184"
+      body "I'm so cold, I find myself looking at a campfire and wondering, what if... -- @StayPuft, http://twitter.com/StayPuft/status/428306266306269184"
+      metadata(
+        "author_avatar_url" => "http://pbs.twimg.com/profile_images/416421334973816832/MrIfbg-A_normal.jpeg",
+        "author_username" => "StayPuft",
+        "message" => "I'm so cold, I find myself looking at a campfire and wondering, what if...",
+        "id" => 428306266306269184
+      )
     end
 
     factory :allow_guests_message, class: AllowGuestsMessage
