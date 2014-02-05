@@ -4,9 +4,6 @@ describe "Message Requests" do
   with_formats(:json, :xml) do
     describe "GET /room/:room_id/recent" do
       let!(:room) { create(:room) }
-      let!(:old_message) { create(:text_message, room: room, created_at: 2.minutes.ago) }
-      let!(:new_message) { create(:text_message, room: room, created_at: 1.minute.ago) }
-      let!(:other_message) { create(:text_message) }
 
       context "when authenticated" do
         let!(:user) { create(:user) }
@@ -16,6 +13,10 @@ describe "Message Requests" do
         end
 
         it "lists messages old to new" do
+          old_message = create(:text_message, room: room, created_at: 2.minutes.ago)
+          new_message = create(:text_message, room: room, created_at: 1.minute.ago)
+          create(:text_message)
+
           get "/room/#{room.id}/recent"
 
           expect(response.status).to eq(200)
@@ -43,7 +44,28 @@ describe "Message Requests" do
           )
         end
 
-        it "shows expanded sound messages"
+        it "shows expanded sound messages" do
+          message = create(:sound_message, room: room)
+
+          get "/room/#{room.id}/recent"
+
+          expect(response.status).to eq(200)
+          expect(response.content).to eq(
+            "messages" => [
+              {
+                "body" => message.body,
+                "created_at" => message.created_at,
+                "description" => message.description,
+                "id" => message.id,
+                "room_id" => message.room_id,
+                "starred" => message.starred?,
+                "type" => message.type,
+                "url" => message.url,
+                "user_id" => message.user_id
+              }
+            ]
+          )
+        end
 
         it "shows expanded tweet messages"
       end

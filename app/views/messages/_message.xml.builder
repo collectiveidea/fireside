@@ -6,4 +6,10 @@ xml.message do
   xml.starred message.starred?, type: "boolean"
   xml.type message.type
   xml.tag! "user-id", message.user_id, type: "integer"
+
+  case message
+  when SoundMessage
+    xml.description message.description
+    xml.url message.url
+  end
 end

@@ -86,6 +86,7 @@ end
 
 class SoundMessage < Message
   SOUND_PATTERN = /^\/play (\w+)$/
+  SOUND_TEMPLATE = "#{ENV["PROTOCOL"]}://#{ENV["HOST"]}/sounds/%s.mp3"
   IMAGE_TEMPLATE = "#{ENV["PROTOCOL"]}://#{ENV["HOST"]}/images/%s"
 
   DESCRIPTIONS = {
@@ -137,7 +138,7 @@ class SoundMessage < Message
 
   validates :user_id, presence: true, strict: true
 
-  before_create :set_metadata
+  before_create :set_metadata, if: :set_metadata?
 
   def self.matches?(attributes)
     body = attributes[:body]
@@ -145,11 +146,23 @@ class SoundMessage < Message
     match && SOUNDS.include?(match[1])
   end
 
+  def description
+    metadata["description"]
+  end
+
+  def url
+    SOUND_TEMPLATE % body
+  end
+
   private
 
   def set_metadata
     self.body = body.match(SOUND_PATTERN)[1]
     self.metadata = { "description" => DESCRIPTIONS[body] }
+  end
+
+  def set_metadata?
+    metadata.blank?
   end
 end
 
@@ -162,6 +175,10 @@ class TweetMessage < Message
 
   def self.matches?(attributes)
     attributes[:body] =~ TWEET_PATTERN
+  end
+
+  def tweet
+    metadata
   end
 
   private

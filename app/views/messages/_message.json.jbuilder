@@ -5,3 +5,9 @@ json.room_id message.room_id
 json.starred message.starred?
 json.type message.type
 json.user_id message.user_id
+
+case message
+when SoundMessage
+  json.description message.description
+  json.url message.url
+end

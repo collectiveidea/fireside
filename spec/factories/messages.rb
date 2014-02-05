@@ -26,7 +26,7 @@ FactoryGirl.define do
       user
       body "tmyk"
       metadata do
-        { "description" => SoundMessage::MESSAGES[body] }
+        { "description" => SoundMessage::DESCRIPTIONS[body] }
       end
     end
 
