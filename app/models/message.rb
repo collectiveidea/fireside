@@ -121,8 +121,66 @@ class TweetMessage < Message
 
   validates :user_id, presence: true, strict: true
 
+  before_create :set_metadata, if: :tweet
+
   def self.matches?(attributes)
     attributes[:body] =~ TWEET_PATTERN
+  end
+
+  private
+
+  def set_metadata
+    self.metadata = {
+      "author_avatar_url" => tweet_author_avatar_url.to_s,
+      "author_username" => tweet_author_username,
+      "id" => tweet_id,
+      "message" => tweet_message
+    }
+
+    self.body = "#{tweet_message} -- @#{tweet_author_username}, #{tweet_url}"
+  end
+
+  def tweet
+    return @tweet if defined? @tweet
+    @tweet = twitter ? twitter.status(body) : nil
+  rescue Twitter::Error
+    @tweet = nil
+  end
+
+  def twitter
+    return @twitter if defined? @twitter
+    @twitter = twitter_configured? ? Twitter::REST::Client.new(twitter_configuration) : nil
+  end
+
+  def twitter_configured?
+    twitter_configuration.values.all?(&:present?)
+  end
+
+  def twitter_configuration
+    {
+      consumer_key: ENV["TWITTER_CONSUMER_KEY"],
+      consumer_secret: ENV["TWITTER_CONSUMER_SECRET"]
+    }
+  end
+
+  def tweet_author_avatar_url
+    tweet.user.profile_image_url
+  end
+
+  def tweet_author_username
+    tweet.user.screen_name
+  end
+
+  def tweet_id
+    tweet.id
+  end
+
+  def tweet_message
+    tweet.text
+  end
+
+  def tweet_url
+    "http://twitter.com/#{tweet_author_username}/status/#{tweet_id}"
   end
 end
 
