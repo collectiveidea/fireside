@@ -102,6 +102,19 @@ describe "Upload Requests" do
             }
           )
         end
+
+        it "posts an upload message" do
+          expect {
+            post "/room/#{room.id}/uploads", { upload: file }, { "Content-Type" => "multipart/form-data" }
+          }.to change {
+            Message.count
+          }.by(1)
+
+          message = Message.last
+          expect(message).to be_a(UploadMessage)
+          expect(message.user_id).to eq(user.id)
+          expect(message.room_id).to eq(room.id)
+        end
       end
 
       context "when unauthenticated" do

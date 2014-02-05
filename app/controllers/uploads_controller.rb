@@ -7,6 +7,7 @@ class UploadsController < ApplicationController
 
   def create
     @upload = @room.upload_file_for_user(params[:upload], current_user)
+    UploadMessage.post(current_user, @room, @upload)
     render :show, status: :created
   end
 
