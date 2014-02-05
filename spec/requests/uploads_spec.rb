@@ -59,6 +59,46 @@ describe "Upload Requests" do
       end
     end
 
+    describe "GET /room/:room_id/messages/:message_id/upload" do
+      let!(:room) { create(:room) }
+      let!(:upload) { create(:upload, room: room) }
+      let!(:message) { create(:upload_message, room: room, upload: upload) }
+
+      context "when authenticated" do
+        let!(:user) { create(:user) }
+
+        before do
+          authenticate(user.api_auth_token)
+        end
+
+        it "shows the upload" do
+          get "/room/#{room.id}/messages/#{message.id}/upload"
+
+          expect(response.status).to eq(200)
+          expect(response.content).to eq(
+            "upload" => {
+              "byte_size" => upload.byte_size,
+              "content_type" => upload.content_type,
+              "created_at" => upload.created_at,
+              "full_url" => upload_full_url(upload),
+              "id" => upload.id,
+              "name" => upload.name,
+              "room_id" => upload.room_id,
+              "user_id" => upload.user_id
+            }
+          )
+        end
+      end
+
+      context "when unauthenticated" do
+        it "requires authentication" do
+          get "/room/#{room.id}/messages/#{message.id}/upload"
+
+          expect(response.status).to eq(401)
+        end
+      end
+    end
+
     describe "POST /room/:room_id/uploads" do
       let!(:room) { create(:room) }
       let!(:file) {

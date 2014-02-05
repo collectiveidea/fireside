@@ -11,6 +11,11 @@ class UploadsController < ApplicationController
     render :show, status: :created
   end
 
+  def show
+    message = @room.messages.find(params[:message_id])
+    @upload = @room.uploads.find(message.metadata["upload_id"])
+  end
+
   private
 
   def load_room

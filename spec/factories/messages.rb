@@ -66,10 +66,14 @@ FactoryGirl.define do
     end
 
     factory :upload_message, class: UploadMessage do
+      ignore do
+        upload { create(:upload) }
+      end
+
       user
       body "campfire.gif"
       metadata do
-        { "upload_id" => create(:upload).id }
+        { "upload_id" => upload.id }
       end
     end
   end
