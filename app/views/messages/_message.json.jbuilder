@@ -10,4 +10,6 @@ case message
 when SoundMessage
   json.description message.description
   json.url message.url
+when TweetMessage
+  json.tweet message.metadata
 end

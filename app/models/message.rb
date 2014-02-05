@@ -177,10 +177,6 @@ class TweetMessage < Message
     attributes[:body] =~ TWEET_PATTERN
   end
 
-  def tweet
-    metadata
-  end
-
   private
 
   def set_metadata

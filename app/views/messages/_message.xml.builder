@@ -11,5 +11,12 @@ xml.message do
   when SoundMessage
     xml.description message.description
     xml.url message.url
+  when TweetMessage
+    xml.tweet do
+      xml.tag! "author-avatar-url", message.metadata["author_avatar_url"]
+      xml.tag! "author-username", message.metadata["author_username"]
+      xml.id message.metadata["id"], type: "integer"
+      xml.message message.metadata["message"]
+    end
   end
 end

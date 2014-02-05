@@ -67,7 +67,27 @@ describe "Message Requests" do
           )
         end
 
-        it "shows expanded tweet messages"
+        it "shows expanded tweet messages" do
+          message = create(:tweet_message, room: room)
+
+          get "/room/#{room.id}/recent"
+
+          expect(response.status).to eq(200)
+          expect(response.content).to eq(
+            "messages" => [
+              {
+                "body" => message.body,
+                "created_at" => message.created_at,
+                "id" => message.id,
+                "room_id" => message.room_id,
+                "starred" => message.starred?,
+                "tweet" => message.metadata,
+                "type" => message.type,
+                "user_id" => message.user_id
+              }
+            ]
+          )
+        end
       end
 
       context "when unauthenticated" do

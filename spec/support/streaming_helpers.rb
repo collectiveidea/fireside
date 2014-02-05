@@ -43,8 +43,6 @@ module StreamingHelpers
       wait_for_server
 
       yield chunks
-    ensure
-      client_thread.kill if client_thread
     end
 
     response = client_thread[:response]
