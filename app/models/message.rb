@@ -125,7 +125,7 @@ class TweetMessage < Message
 
   validates :user_id, presence: true, strict: true
 
-  before_create :set_metadata, if: :tweet
+  before_create :set_metadata, if: :set_metadata?
 
   def self.matches?(attributes)
     attributes[:body] =~ TWEET_PATTERN
@@ -142,6 +142,10 @@ class TweetMessage < Message
     }
 
     self.body = "#{tweet_message} -- @#{tweet_author_username}, #{tweet_url}"
+  end
+
+  def set_metadata?
+    metadata.blank? && tweet
   end
 
   def tweet
