@@ -12,6 +12,10 @@ class Message < ActiveRecord::Base
       JSON.dump(attributes)
     end
 
+    def starred?
+      starred
+    end
+
     private
 
     def method_missing(method, *)

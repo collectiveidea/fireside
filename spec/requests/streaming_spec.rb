@@ -28,6 +28,7 @@ describe "Streaming Requests", streaming: true do
               "created_at" => message.created_at,
               "id" => message.id,
               "room_id" => message.room_id,
+              "starred" => message.starred?,
               "type" => message.type,
               "user_id" => message.user_id
             )
@@ -44,6 +45,7 @@ describe "Streaming Requests", streaming: true do
               "created_at" => message.created_at,
               "id" => message.id,
               "room_id" => message.room_id,
+              "starred" => message.starred?,
               "type" => message.type,
               "user_id" => message.user_id
             )
