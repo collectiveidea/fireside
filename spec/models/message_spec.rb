@@ -82,6 +82,10 @@ describe Message do
         message = Message.post(user, room, body: "/play tmyk")
 
         expect(message.reload).to be_a(SoundMessage)
+        expect(message.body).to eq("tmyk")
+        expect(message.metadata).to eq(
+          "description" => ":sparkles: :star: The More You Know :sparkles: :star:"
+        )
       end
 
       it "creates a text message for an invalid sound" do

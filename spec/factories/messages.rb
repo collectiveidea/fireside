@@ -25,9 +25,9 @@ FactoryGirl.define do
     factory :sound_message, class: SoundMessage do
       user
       body "tmyk"
-      metadata(
-        "description" => "The More You Know :sparkles :star:"
-      )
+      metadata do
+        { "description" => SoundMessage::MESSAGES[body] }
+      end
     end
 
     factory :tweet_message, class: TweetMessage do

@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 class Message < ActiveRecord::Base
   class Payload < Struct.new(:attributes)
     def self.load(payload_string)
@@ -103,20 +105,71 @@ class PasteMessage < Message
 end
 
 class SoundMessage < Message
-  SOUNDS = %w(
-    56k bell bezos bueller clowntown cottoneyejoe crickets dadgummit dangerzone
-    danielsan deeper drama greatjob greyjoy heygirl horn horror inconceivable
-    live loggins makeitso noooo nyan ohmy ohyeah pushit rimshot rollout sax
-    secret sexyback story tada tmyk trololo trombone vuvuzela what whoomp yeah
-    yodel
-  )
+  SOUND_PATTERN = /^\/play (\w+)$/
+  IMAGE_TEMPLATE = "#{ENV["PROTOCOL"]}://#{ENV["HOST"]}/images/%s"
+
+  DESCRIPTIONS = {
+    "56k" => IMAGE_TEMPLATE % "56k.gif",
+    "bell" => ":bell:",
+    "bezos" => ":laughing::thought_balloon:",
+    "bueller" => "anyone?",
+    "clowntown" => IMAGE_TEMPLATE % "clowntown.gif",
+    "cottoneyejoe" => ":notes::hear_no_evil::notes:",
+    "crickets" => "hears crickets chirping",
+    "dadgummit" => "dad gummit!! :fishing_pole_and_fish:",
+    "dangerzone" => IMAGE_TEMPLATE % "dangerzone.png",
+    "danielsan" => ":fireworks: :trophy: :fireworks:",
+    "deeper" => IMAGE_TEMPLATE % "top.gif",
+    "drama" => IMAGE_TEMPLATE % "drama.jpg",
+    "greatjob" => IMAGE_TEMPLATE % "greatjob.png",
+    "greyjoy" => ":confounded::trumpet:",
+    "guarantee" => "guarantees it :ok_hand:",
+    "heygirl" => ":sparkles::information_desk_person::sparkles:",
+    "horn" => ":dog: :scissors: :cat:",
+    "horror" => ":skull: :skull: :skull: :skull: :skull: :skull: :skull: :skull: :skull: :skull:",
+    "inconceivable" => "doesn't think it means what you think it means...",
+    "live" => "is DOING IT LIVE",
+    "loggins" => IMAGE_TEMPLATE % "loggins.jpg",
+    "makeitso" => "make it so :point_right:",
+    "noooo" => ":princess::skull::unamused:",
+    "nyan" => IMAGE_TEMPLATE % "nyan.gif",
+    "ohmy" => "raises an eyebrow :smirk:",
+    "ohyeah" => "isn't playing by the rules",
+    "pushit" => IMAGE_TEMPLATE % "pushit.gif",
+    "rimshot" => "plays a rimshot",
+    "rollout" => ":shipit::car:",
+    "sax" => ":city_sunset::saxophone::notes:",
+    "secret" => "found a secret area :key:",
+    "sexyback" => ":underage:",
+    "story" => "and now you know...",
+    "tada" => "plays a fanfare :flags:",
+    "tmyk" => ":sparkles: :star: The More You Know :sparkles: :star:",
+    "trololo" => "троллинг :trollface:",
+    "trombone" => "plays a sad trombone",
+    "vuvuzela" => "======<() ~ ♪ ~♫",
+    "what" => IMAGE_TEMPLATE % "what.gif",
+    "whoomp" => ":clap::bangbang::sunglasses:",
+    "yeah" => IMAGE_TEMPLATE % "yeah.gif",
+    "yodel" => ":mega::mount_fuji::hear_no_evil:",
+  }
+
+  SOUNDS = DESCRIPTIONS.keys
 
   validates :user_id, presence: true, strict: true
 
+  before_create :set_metadata
+
   def self.matches?(attributes)
     body = attributes[:body]
-    match = body && body.match(/^\/play (\w+)$/)
+    match = body && body.match(SOUND_PATTERN)
     match && SOUNDS.include?(match[1])
+  end
+
+  private
+
+  def set_metadata
+    self.body = body.match(SOUND_PATTERN)[1]
+    self.metadata = { "description" => DESCRIPTIONS[body] }
   end
 end
 
