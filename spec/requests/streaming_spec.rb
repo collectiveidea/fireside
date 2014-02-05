@@ -58,6 +58,10 @@ describe "Streaming Requests", streaming: true do
 
           expect(response.status).to eq(200)
         end
+
+        it "shows expanded sound messages"
+
+        it "shows expanded tweet messages"
       end
 
       context "when unauthenticated" do

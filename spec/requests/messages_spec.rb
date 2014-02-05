@@ -40,6 +40,10 @@ describe "Message Requests" do
             ]
           )
         end
+
+        it "shows expanded sound messages"
+
+        it "shows expanded tweet messages"
       end
 
       context "when unauthenticated" do
