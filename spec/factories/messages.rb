@@ -67,6 +67,7 @@ FactoryGirl.define do
 
     factory :upload_message, class: UploadMessage do
       user
+      body "campfire.gif"
     end
   end
 end
