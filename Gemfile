@@ -9,9 +9,11 @@ gem "pg", "~> 0.17"
 gem "actionpack-xml_parser", "~> 1.0"
 gem "bcrypt-ruby", "~> 3.1"
 gem "email_validator", "~> 1.4"
+gem "figaro", "~> 0.7"
 gem "jbuilder", "~> 2.0"
 gem "paperclip", "~> 3.5"
 gem "puma", "~> 2.7"
+gem "twitter", "~> 5.6"
 
 group :development, :test do
   gem "database_cleaner", "~> 1.2"

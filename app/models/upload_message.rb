@@ -1,2 +1,0 @@
-class UploadMessage < Message
-end

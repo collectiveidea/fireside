@@ -20,7 +20,11 @@ class RoomsController < ApplicationController
 
   def join
     if current_user.admin? || @room.unlocked?
-      current_user.join_room(@room)
+      unless current_user.in_room?(@room)
+        current_user.join_room(@room)
+        EnterMessage.post(current_user, @room)
+      end
+
       head :ok
     else
       head :locked
@@ -28,11 +32,16 @@ class RoomsController < ApplicationController
   end
 
   def leave
-    current_user.leave_room(@room)
+    if current_user.in_room?(@room)
+      current_user.leave_room(@room)
+      LeaveMessage.post(current_user, @room)
+    end
+
     head :ok
   end
 
   def lock
+    LockMessage.post(current_user, @room)
     @room.lock
     head :ok
   end
@@ -40,6 +49,7 @@ class RoomsController < ApplicationController
   def unlock
     @room.unlock
     @room.clean
+    UnlockMessage.post(current_user, @room)
     head :ok
   end
 

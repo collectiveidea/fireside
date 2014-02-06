@@ -4,9 +4,6 @@ describe "Message Requests" do
   with_formats(:json, :xml) do
     describe "GET /room/:room_id/recent" do
       let!(:room) { create(:room) }
-      let!(:old_message) { create(:message, room: room, created_at: 2.minutes.ago) }
-      let!(:new_message) { create(:message, room: room, created_at: 1.minute.ago) }
-      let!(:other_message) { create(:message) }
 
       context "when authenticated" do
         let!(:user) { create(:user) }
@@ -16,6 +13,10 @@ describe "Message Requests" do
         end
 
         it "lists messages old to new" do
+          old_message = create(:text_message, room: room, created_at: 2.minutes.ago)
+          new_message = create(:text_message, room: room, created_at: 1.minute.ago)
+          create(:text_message)
+
           get "/room/#{room.id}/recent"
 
           expect(response.status).to eq(200)
@@ -26,6 +27,7 @@ describe "Message Requests" do
                 "created_at" => old_message.created_at,
                 "id" => old_message.id,
                 "room_id" => old_message.room_id,
+                "starred" => old_message.starred?,
                 "type" => old_message.type,
                 "user_id" => old_message.user_id
               },
@@ -34,8 +36,54 @@ describe "Message Requests" do
                 "created_at" => new_message.created_at,
                 "id" => new_message.id,
                 "room_id" => new_message.room_id,
+                "starred" => new_message.starred?,
                 "type" => new_message.type,
                 "user_id" => new_message.user_id
+              }
+            ]
+          )
+        end
+
+        it "shows expanded sound messages" do
+          message = create(:sound_message, room: room)
+
+          get "/room/#{room.id}/recent"
+
+          expect(response.status).to eq(200)
+          expect(response.content).to eq(
+            "messages" => [
+              {
+                "body" => message.body,
+                "created_at" => message.created_at,
+                "description" => message.description,
+                "id" => message.id,
+                "room_id" => message.room_id,
+                "starred" => message.starred?,
+                "type" => message.type,
+                "url" => message.url,
+                "user_id" => message.user_id
+              }
+            ]
+          )
+        end
+
+        it "shows expanded tweet messages" do
+          message = create(:tweet_message, room: room)
+
+          get "/room/#{room.id}/recent"
+
+          expect(response.status).to eq(200)
+          expect(response.content).to eq(
+            "messages" => [
+              {
+                "body" => message.body,
+                "created_at" => message.created_at,
+                "id" => message.id,
+                "room_id" => message.room_id,
+                "starred" => message.starred?,
+                "tweet" => message.metadata,
+                "type" => message.type,
+                "user_id" => message.user_id
               }
             ]
           )
@@ -84,6 +132,7 @@ describe "Message Requests" do
                   "created_at" => message.created_at,
                   "id" => message.id,
                   "room_id" => message.room_id,
+                  "starred" => message.starred?,
                   "type" => message.type,
                   "user_id" => message.user_id
                 }
@@ -115,6 +164,7 @@ describe "Message Requests" do
                   "created_at" => message.created_at,
                   "id" => message.id,
                   "room_id" => message.room_id,
+                  "starred" => message.starred?,
                   "type" => message.type,
                   "user_id" => message.user_id
                 }
@@ -164,7 +214,7 @@ describe "Message Requests" do
     end
 
     describe "POST /messages/:id/star" do
-      let!(:message) { create(:message) }
+      let!(:message) { create(:text_message) }
 
       context "when authenticated" do
         let!(:user) { create(:user) }
@@ -199,7 +249,7 @@ describe "Message Requests" do
     end
 
     describe "DELETE /messages/:id/star" do
-      let!(:message) { create(:message, :starred) }
+      let!(:message) { create(:text_message, :starred) }
 
       context "when authenticated" do
         let!(:user) { create(:user) }

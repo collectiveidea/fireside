@@ -28,6 +28,7 @@ describe "Streaming Requests", streaming: true do
               "created_at" => message.created_at,
               "id" => message.id,
               "room_id" => message.room_id,
+              "starred" => message.starred?,
               "type" => message.type,
               "user_id" => message.user_id
             )
@@ -44,6 +45,7 @@ describe "Streaming Requests", streaming: true do
               "created_at" => message.created_at,
               "id" => message.id,
               "room_id" => message.room_id,
+              "starred" => message.starred?,
               "type" => message.type,
               "user_id" => message.user_id
             )
@@ -54,6 +56,59 @@ describe "Streaming Requests", streaming: true do
             }.not_to change {
               chunks.size
             }
+          end
+
+          expect(response.status).to eq(200)
+        end
+
+        it "shows expanded sound messages" do
+          stream "/room/#{room.id}/live" do |chunks|
+            message = nil
+
+            expect {
+              message = create(:sound_message, room: room)
+              sleep 0.1 # Wait for stream
+            }.to change {
+              chunks.size
+            }.from(0).to(1)
+
+            expect(chunks.last).to eq(
+              "body" => message.body,
+              "created_at" => message.created_at,
+              "description" => message.description,
+              "id" => message.id,
+              "room_id" => message.room_id,
+              "starred" => message.starred?,
+              "type" => message.type,
+              "url" => message.url,
+              "user_id" => message.user_id
+            )
+          end
+
+          expect(response.status).to eq(200)
+        end
+
+        it "shows expanded tweet messages" do
+          stream "/room/#{room.id}/live" do |chunks|
+            message = nil
+
+            expect {
+              message = create(:tweet_message, room: room)
+              sleep 0.1 # Wait for stream
+            }.to change {
+              chunks.size
+            }.from(0).to(1)
+
+            expect(chunks.last).to eq(
+              "body" => message.body,
+              "created_at" => message.created_at,
+              "id" => message.id,
+              "room_id" => message.room_id,
+              "starred" => message.starred?,
+              "tweet" => message.metadata,
+              "type" => message.type,
+              "user_id" => message.user_id
+            )
           end
 
           expect(response.status).to eq(200)
