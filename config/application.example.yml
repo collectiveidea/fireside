@@ -30,3 +30,10 @@ SECRET_KEY_BASE: "7a9b10f0e5d333159565407c6d985186e4ce6beaf1fdc0922812fe7c1e1cf1
 #
 # TWITTER_CONSUMER_KEY: "99lF2RzlT8BgYS9udIGXjA"
 # TWITTER_CONSUMER_SECRET: "kiMwUqh6h4DhxnHc6wUVlUW5LjqJakyCstzaECE"
+
+# Time Zone
+#
+# The time zone of the application is communicated through the /account
+# endpoint. Client applications may choose to use this information.
+#
+# TIME_ZONE: "Eastern Time (US & Canada)"
