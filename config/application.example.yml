@@ -1,5 +1,32 @@
+# REQUIRED CONFIGURATION
+
 HOST: "localhost:3000"
 PROTOCOL: "http"
 SECRET_KEY_BASE: "7a9b10f0e5d333159565407c6d985186e4ce6beaf1fdc0922812fe7c1e1cf1f7c08ac8214d4438268922acf7c75969fae696a11754cc578d3b2cccf79de13813"
-TWITTER_CONSUMER_KEY: "99lF2RzlT8BgYS9udIGXjA"
-TWITTER_CONSUMER_SECRET: "kiMwUqh6h4DhxnHc6wUVlUW5LjqJakyCstzaECE"
+
+# OPTIONAL CONFIGURATION
+
+# Amazon S3
+#
+# By providing AWS credentials and an S3 bucket name, all uploaded files will be
+# stored with S3 rather than on the local filesystem. Fees apply. S3 credentials
+# should be considered as required if deploying to Heroku.
+#
+# See: https://aws.amazon.com/s3/
+#      https://devcenter.heroku.com/articles/dynos#ephemeral-filesystem
+#
+# S3_BUCKET: "fireside-uploads"
+# S3_ACCESS_KEY_ID: "EGVQUKICYDBOIZHAVBDF"
+# S3_SECRET_ACCESS_KEY: "GTvFuhn8TLJVDtElp62e94hvk3cXO2NZAbQfei4o"
+
+# Twitter
+#
+# Providing Twitter application credentials allows your installation of Fireside
+# to detect messages containing Tweet URLs and expand them to contain further
+# metadata. Clients may use this information to decorate these messages more
+# richly. Twitter API requests are subject to rate limiting.
+#
+# See: https://dev.twitter.com/apps/new
+#
+# TWITTER_CONSUMER_KEY: "99lF2RzlT8BgYS9udIGXjA"
+# TWITTER_CONSUMER_SECRET: "kiMwUqh6h4DhxnHc6wUVlUW5LjqJakyCstzaECE"
