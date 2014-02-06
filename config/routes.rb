@@ -1,4 +1,6 @@
 Fireside::Application.routes.draw do
+  get "account" => "accounts#show", as: nil
+
   get "users/me"  => "users#current", as: nil
   get "users/:id" => "users#show"
 
