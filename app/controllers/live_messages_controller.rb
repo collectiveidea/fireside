@@ -5,10 +5,14 @@ class LiveMessagesController < ApplicationController
 
   def index
     @room.on_message do |payload|
-      response.stream.write(render_to_body(
-        partial: "messages/message",
-        locals: { message: payload }
-      ))
+      if payload
+        response.stream.write(render_to_body(
+          partial: "messages/message",
+          locals: { message: payload }
+        ))
+      else
+        response.stream.write(" ")
+      end
     end
   rescue IOError
     # Client closed connection

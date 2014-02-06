@@ -47,9 +47,11 @@ class Room < ActiveRecord::Base
     pg = connection.raw_connection
 
     loop do
-      pg.wait_for_notify do |channel, pid, payload|
+      notified = pg.wait_for_notify(3) do |channel, pid, payload|
         yield Message.from_payload(payload)
       end
+
+      yield nil unless notified
     end
   ensure
     connection.execute("UNLISTEN #{channel}")
