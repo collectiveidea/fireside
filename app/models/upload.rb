@@ -2,7 +2,7 @@ class Upload < ActiveRecord::Base
   belongs_to :user, inverse_of: :uploads
   belongs_to :room, inverse_of: :uploads
 
-  has_attached_file :file, url: "/files/:fingerprint.:extension"
+  has_attached_file :file, url: "/uploads/:fingerprint.:extension"
 
   validates :user_id, :room_id, presence: true, strict: true
   validates_attachment :file, presence: true, size: { in: 0..10.megabytes }
