@@ -4,3 +4,4 @@ json.created_at user.created_at
 json.email_address user.email
 json.id user.id
 json.name user.name
+json.type "Member"

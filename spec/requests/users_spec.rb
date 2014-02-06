@@ -23,7 +23,8 @@ describe "User Requests" do
               "created_at" => user.created_at,
               "email_address" => user.email,
               "id" => user.id,
-              "name" => user.name
+              "name" => user.name,
+              "type" => "Member"
             }
           )
         end
@@ -58,7 +59,8 @@ describe "User Requests" do
               "created_at" => user.created_at,
               "email_address" => user.email,
               "id" => user.id,
-              "name" => user.name
+              "name" => user.name,
+              "type" => "Member"
             }
           )
         end
@@ -81,7 +83,8 @@ describe "User Requests" do
               "created_at" => user.created_at,
               "email_address" => user.email,
               "id" => user.id,
-              "name" => user.name
+              "name" => user.name,
+              "type" => "Member"
             }
           )
         end

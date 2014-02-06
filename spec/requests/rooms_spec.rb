@@ -139,7 +139,8 @@ describe "Room Requests" do
                   "created_at" => other_user.created_at,
                   "email_address" => other_user.email,
                   "id" => other_user.id,
-                  "name" => other_user.name
+                  "name" => other_user.name,
+                  "type" => "Member"
                 }
               ]
             }
