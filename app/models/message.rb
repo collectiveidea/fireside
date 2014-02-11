@@ -23,6 +23,12 @@ class Message < ActiveRecord::Base
     order(:created_at)
   end
 
+  def self.today
+    now = Time.current
+    today = now.beginning_of_day..now.end_of_day
+    where(created_at: today).old_to_new
+  end
+
   def self.post(user, room, attributes)
     attributes.update(user_id: user.id, room_id: room.id, private: room.locked?)
     infer_subclass!(attributes).create(attributes)

@@ -14,8 +14,10 @@ Fireside::Application.routes.draw do
   post "room/:id/lock"   => "rooms#lock"
   post "room/:id/unlock" => "rooms#unlock"
 
-  get  "room/:room_id/recent" => "messages#index"
-  post "room/:room_id/speak"  => "messages#create"
+  get "room/:room_id/recent"     => "messages#index"
+  get "room/:room_id/transcript" => "messages#today"
+
+  post "room/:room_id/speak" => "messages#create"
 
   get "room/:room_id/live" => "live_messages#index"
 
