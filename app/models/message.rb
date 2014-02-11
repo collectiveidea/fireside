@@ -23,10 +23,14 @@ class Message < ActiveRecord::Base
     order(:created_at)
   end
 
+  def self.recent
+    old_to_new.limit(25)
+  end
+
   def self.today
     now = Time.current
     today = now.beginning_of_day..now.end_of_day
-    where(created_at: today).old_to_new
+    old_to_new.where(created_at: today)
   end
 
   def self.post(user, room, attributes)

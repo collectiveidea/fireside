@@ -3,7 +3,7 @@ class MessagesController < ApplicationController
   before_action :load_message, only: [:star, :unstar]
 
   def index
-    @messages = @room.messages.old_to_new
+    @messages = @room.messages.recent
   end
 
   def today
