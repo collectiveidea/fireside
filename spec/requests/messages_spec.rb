@@ -53,6 +53,15 @@ describe "Message Requests" do
           expect(response.content.to_hash["messages"]).to have(25).messages
         end
 
+        it "limits to 25 messages by default" do
+          create_list(:text_message, 11, room: room)
+
+          get "/room/#{room.id}/recent?limit=10"
+
+          expect(response.status).to eq(200)
+          expect(response.content.to_hash["messages"]).to have(10).messages
+        end
+
         it "shows expanded sound messages" do
           message = create(:sound_message, room: room)
 

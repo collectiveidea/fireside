@@ -23,8 +23,8 @@ class Message < ActiveRecord::Base
     order(:created_at)
   end
 
-  def self.recent
-    old_to_new.limit(25)
+  def self.recent(limit = nil)
+    old_to_new.limit(limit || 25)
   end
 
   def self.today
