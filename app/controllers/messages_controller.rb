@@ -1,5 +1,5 @@
 class MessagesController < ApplicationController
-  before_action :load_room, only: [:index, :today, :create]
+  before_action :load_room, only: [:index, :today, :date, :create]
   before_action :load_message, only: [:star, :unstar]
 
   def index
@@ -8,6 +8,11 @@ class MessagesController < ApplicationController
 
   def today
     @messages = @room.messages.today
+    render :index
+  end
+
+  def date
+    @messages = @room.messages.date(params[:year], params[:month], params[:day])
     render :index
   end
 

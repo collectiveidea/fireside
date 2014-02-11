@@ -33,6 +33,12 @@ class Message < ActiveRecord::Base
     old_to_new.where(created_at: today)
   end
 
+  def self.date(year, month, day)
+    date = Date.new(year.to_i, month.to_i, day.to_i)
+    day = date.beginning_of_day..date.end_of_day
+    old_to_new.where(created_at: day)
+  end
+
   def self.post(user, room, attributes)
     attributes.update(user_id: user.id, room_id: room.id, private: room.locked?)
     infer_subclass!(attributes).create(attributes)
