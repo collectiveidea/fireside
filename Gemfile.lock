@@ -88,6 +88,10 @@ GEM
       cocaine (~> 0.5.3)
       mime-types
     pg (0.17.1)
+    pg_search (0.7.3)
+      activerecord (>= 3.1)
+      activesupport (>= 3.1)
+      arel
     polyglot (0.3.3)
     pry (0.9.12.6)
       coderay (~> 1.0)
@@ -171,6 +175,7 @@ DEPENDENCIES
   jbuilder (~> 2.0)
   paperclip (~> 3.5)
   pg (~> 0.17)
+  pg_search (~> 0.7.3)
   pry
   puma (~> 2.7)
   rails (~> 4.0.2)

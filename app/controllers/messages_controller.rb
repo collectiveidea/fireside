@@ -16,6 +16,11 @@ class MessagesController < ApplicationController
     render :index
   end
 
+  def search
+    @messages = Message.search(params[:q])
+    render :index
+  end
+
   def create
     @message = Message.post(current_user, @room, message_params)
 

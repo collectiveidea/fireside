@@ -13,6 +13,7 @@ gem "email_validator", "~> 1.4"
 gem "figaro", "~> 0.7"
 gem "jbuilder", "~> 2.0"
 gem "paperclip", "~> 3.5"
+gem "pg_search", "~> 0.7.3"
 gem "puma", "~> 2.7"
 gem "twitter", "~> 5.6"
 
