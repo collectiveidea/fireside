@@ -1,9 +1,19 @@
 class MessagesController < ApplicationController
-  before_action :load_room, only: [:index, :create]
+  before_action :load_room, only: [:index, :today, :date, :create]
   before_action :load_message, only: [:star, :unstar]
 
   def index
-    @messages = @room.messages.old_to_new
+    @messages = @room.messages.recent(params[:limit])
+  end
+
+  def today
+    @messages = @room.messages.today
+    render :index
+  end
+
+  def date
+    @messages = @room.messages.date(params[:year], params[:month], params[:day])
+    render :index
   end
 
   def create
