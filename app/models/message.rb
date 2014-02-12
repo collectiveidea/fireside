@@ -48,7 +48,7 @@ class Message < ActiveRecord::Base
   end
 
   def self.search(query)
-    pg_search(query).new_to_old
+    pg_search(query).new_to_old.limit(50)
   end
 
   def self.post(user, room, attributes)

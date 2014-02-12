@@ -41,6 +41,15 @@ describe "Search Requests" do
             ]
           )
         end
+
+        it "is limited to 50 results" do
+          create_list(:text_message, 51, body: "Apples")
+
+          get "/search/apples"
+
+          expect(response.status).to eq(200)
+          expect(response.content.to_hash["messages"]).to have(50).messages
+        end
       end
 
       context "when unauthenticated" do
