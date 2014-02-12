@@ -22,6 +22,7 @@ class Upload < ActiveRecord::Base
 
   validates :user_id, :room_id, presence: true, strict: true
   validates_attachment :file, presence: true, size: { in: 0..10.megabytes }
+  do_not_validate_attachment_file_type :file
 
   def self.old_to_new
     order(:created_at)
