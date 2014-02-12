@@ -1,12 +1,16 @@
 # encoding: utf-8
 
 class Message < ActiveRecord::Base
+  include PgSearch
+
   belongs_to :user, inverse_of: :messages
   belongs_to :room, inverse_of: :messages
 
   serialize :metadata, Hash
 
   validates :room_id, presence: true, strict: true
+
+  pg_search_scope :pg_search, against: :body
 
   def self.inherited(subclass)
     subclasses << subclass
@@ -37,6 +41,14 @@ class Message < ActiveRecord::Base
     date = Date.new(year.to_i, month.to_i, day.to_i)
     day = date.beginning_of_day..date.end_of_day
     old_to_new.where(created_at: day)
+  end
+
+  def self.new_to_old
+    old_to_new.reverse_order
+  end
+
+  def self.search(query)
+    pg_search(query).new_to_old.limit(50)
   end
 
   def self.post(user, room, attributes)

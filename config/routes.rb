@@ -23,6 +23,8 @@ Fireside::Application.routes.draw do
 
   get "room/:room_id/live" => "live_messages#index"
 
+  get "search/(:q)" => "messages#search"
+
   post   "messages/:id/star" => "messages#star"
   delete "messages/:id/star" => "messages#unstar"
 
