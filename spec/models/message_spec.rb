@@ -100,55 +100,115 @@ describe Message do
         expect(message.reload).to be_a(TextMessage)
       end
 
-      it "creates a tweet message for a valid tweet URL" do
-        tweet_id = 428306266306269184
-        tweet_user_screen_name = "StayPuft"
-        tweet_url = "http://twitter.com/#{tweet_user_screen_name}/status/#{tweet_id}"
-        tweet_text = "I'm so cold, I find myself looking at a campfire and wondering, what if..."
-        tweet_user_profile_image_url = "http://pbs.twimg.com/profile_images/416421334973816832/MrIfbg-A_normal.jpeg"
+      context "with Twitter configured" do
+        before do
+          @original_twitter_consumer_key = ENV["TWITTER_CONSUMER_KEY"]
+          @original_twitter_consumer_secret = ENV["TWITTER_CONSUMER_SECRET"]
 
-        Twitter::REST::Client.any_instance.stub(:status).with(tweet_url) {
-          Twitter::Tweet.new(
-            id: tweet_id,
-            text: tweet_text,
-            user: {
-              id: 458953226,
-              profile_image_url_https: tweet_user_profile_image_url,
-              screen_name: tweet_user_screen_name
-            }
+          ENV["TWITTER_CONSUMER_KEY"] = "key"
+          ENV["TWITTER_CONSUMER_SECRET"] = "secret"
+        end
+
+        after do
+          ENV["TWITTER_CONSUMER_KEY"] = @original_twitter_consumer_key
+          ENV["TWITTER_CONSUMER_SECRET"] = @original_twitter_consumer_secret
+        end
+
+        it "creates an expanded tweet message for a valid tweet URL" do
+          tweet_id = 428306266306269184
+          tweet_user_screen_name = "StayPuft"
+          tweet_url = "http://twitter.com/#{tweet_user_screen_name}/status/#{tweet_id}"
+          tweet_text = "I'm so cold, I find myself looking at a campfire and wondering, what if..."
+          tweet_user_profile_image_url = "http://pbs.twimg.com/profile_images/416421334973816832/MrIfbg-A_normal.jpeg"
+
+          Twitter::REST::Client.any_instance.stub(:status).with(tweet_url) {
+            Twitter::Tweet.new(
+              id: tweet_id,
+              text: tweet_text,
+              user: {
+                id: 458953226,
+                profile_image_url_https: tweet_user_profile_image_url,
+                screen_name: tweet_user_screen_name
+              }
+            )
+          }
+
+          message = Message.post(user, room, body: tweet_url)
+
+          expect(message.reload).to be_a(TweetMessage)
+          expect(message.body).to eq("#{tweet_text} -- @#{tweet_user_screen_name}, #{tweet_url}")
+          expect(message.metadata).to eq(
+            "author_avatar_url" => tweet_user_profile_image_url,
+            "author_username" => tweet_user_screen_name,
+            "message" => tweet_text,
+            "id" => tweet_id
           )
-        }
+        end
 
-        message = Message.post(user, room, body: tweet_url)
+        it "creates a tweet message for an invalid tweet URL" do
+          tweet_url = "http://twitter.com/StayPuft/status/428306266306269184"
 
-        expect(message.reload).to be_a(TweetMessage)
-        expect(message.body).to eq("#{tweet_text} -- @#{tweet_user_screen_name}, #{tweet_url}")
-        expect(message.metadata).to eq(
-          "author_avatar_url" => tweet_user_profile_image_url,
-          "author_username" => tweet_user_screen_name,
-          "message" => tweet_text,
-          "id" => tweet_id
-        )
+          Twitter::REST::Client.any_instance.stub(:status).with(tweet_url) {
+            raise Twitter::Error::NotFound
+          }
+
+          message = Message.post(user, room, body: tweet_url)
+
+          expect(message.reload).to be_a(TweetMessage)
+          expect(message.body).to eq(tweet_url)
+          expect(message.metadata).to be_blank
+        end
+
+        it "creates a text message when requested for a valid tweet URL" do
+          message = Message.post(user, room, body: "http://twitter.com/StayPuft/status/428306266306269184", type: "TextMessage")
+
+          expect(message.reload).to be_a(TextMessage)
+        end
       end
 
-      it "creates a tweet message for an invalid tweet URL" do
-        tweet_url = "http://twitter.com/StayPuft/status/428306266306269184"
+      context "without Twitter configured" do
+        before do
+          @original_twitter_consumer_key = ENV["TWITTER_CONSUMER_KEY"]
+          @original_twitter_consumer_secret = ENV["TWITTER_CONSUMER_SECRET"]
 
-        Twitter::REST::Client.any_instance.stub(:status).with(tweet_url) {
-          raise Twitter::Error::NotFound
-        }
+          ENV["TWITTER_CONSUMER_KEY"] = nil
+          ENV["TWITTER_CONSUMER_SECRET"] = nil
+        end
 
-        message = Message.post(user, room, body: tweet_url)
+        after do
+          ENV["TWITTER_CONSUMER_KEY"] = @original_twitter_consumer_key
+          ENV["TWITTER_CONSUMER_SECRET"] = @original_twitter_consumer_secret
+        end
 
-        expect(message.reload).to be_a(TweetMessage)
-        expect(message.body).to eq(tweet_url)
-        expect(message.metadata).to be_blank
-      end
+        it "creates a tweet message for a valid tweet URL" do
+          tweet_url = "http://twitter.com/StayPuft/status/428306266306269184"
 
-      it "creates a text message when requested for a valid tweet URL" do
-        message = Message.post(user, room, body: "http://twitter.com/StayPuft/status/428306266306269184", type: "TextMessage")
+          message = Message.post(user, room, body: tweet_url)
 
-        expect(message.reload).to be_a(TextMessage)
+          expect(message.reload).to be_a(TweetMessage)
+          expect(message.body).to eq(tweet_url)
+          expect(message.metadata).to be_blank
+        end
+
+        it "creates a tweet message for an invalid tweet URL" do
+          tweet_url = "http://twitter.com/StayPuft/status/428306266306269184"
+
+          Twitter::REST::Client.any_instance.stub(:status).with(tweet_url) {
+            raise Twitter::Error::NotFound
+          }
+
+          message = Message.post(user, room, body: tweet_url)
+
+          expect(message.reload).to be_a(TweetMessage)
+          expect(message.body).to eq(tweet_url)
+          expect(message.metadata).to be_blank
+        end
+
+        it "creates a text message when requested for a valid tweet URL" do
+          message = Message.post(user, room, body: "http://twitter.com/StayPuft/status/428306266306269184", type: "TextMessage")
+
+          expect(message.reload).to be_a(TextMessage)
+        end
       end
 
       it "creates a text message by default" do
