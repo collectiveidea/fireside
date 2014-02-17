@@ -455,8 +455,6 @@ describe "Room Requests" do
     end
 
     describe "POST /room/:id/lock" do
-      let!(:room) { create(:room) }
-
       context "when authenticated" do
         let!(:user) { create(:user) }
 
@@ -464,33 +462,62 @@ describe "Room Requests" do
           authenticate(user.api_auth_token)
         end
 
-        it "locks the room" do
-          expect {
-            post "/room/#{room.id}/lock"
-          }.to change {
-            room.reload.locked?
-          }.from(false).to(true)
+        context "when unlocked" do
+          let!(:room) { create(:room, :unlocked) }
 
-          expect(response.status).to eq(200)
-          expect(response.body).to be_blank
+          it "locks the room" do
+            expect {
+              post "/room/#{room.id}/lock"
+            }.to change {
+              room.reload.locked?
+            }.from(false).to(true)
+
+            expect(response.status).to eq(200)
+            expect(response.body).to be_blank
+          end
+
+          it "posts a lock message" do
+            expect {
+              post "/room/#{room.id}/lock"
+            }.to change {
+              Message.count
+            }.by(1)
+
+            message = Message.last
+            expect(message).to be_a(LockMessage)
+            expect(message.user_id).to eq(user.id)
+            expect(message.room_id).to eq(room.id)
+            expect(message).not_to be_private
+          end
         end
 
-        it "posts a lock message" do
-          expect {
-            post "/room/#{room.id}/lock"
-          }.to change {
-            Message.count
-          }.by(1)
+        context "when locked" do
+          let!(:room) { create(:room, :locked) }
 
-          message = Message.last
-          expect(message).to be_a(LockMessage)
-          expect(message.user_id).to eq(user.id)
-          expect(message.room_id).to eq(room.id)
-          expect(message).not_to be_private
+          it "keeps the room locked" do
+            expect {
+              post "/room/#{room.id}/lock"
+            }.not_to change {
+              room.reload.locked?
+            }
+
+            expect(response.status).to eq(200)
+            expect(response.body).to be_blank
+          end
+
+          it "doesn't post a lock message" do
+            expect {
+              post "/room/#{room.id}/lock"
+            }.not_to change {
+              Message.count
+            }
+          end
         end
       end
 
       context "when unauthenticated" do
+        let!(:room) { create(:room, :unlocked) }
+
         it "requires authentication" do
           expect {
             post "/room/#{room.id}/lock"
@@ -504,51 +531,293 @@ describe "Room Requests" do
     end
 
     describe "POST /room/:id/unlock" do
-      let!(:room) { create(:room, :locked) }
-
       context "when authenticated" do
-        let!(:user) { create(:user) }
-
         before do
           authenticate(user.api_auth_token)
         end
 
-        it "unlocks the room" do
-          expect {
-            post "/room/#{room.id}/unlock"
-          }.to change {
-            room.reload.locked?
-          }.from(true).to(false)
+        context "as an admin" do
+          let!(:user) { create(:user, :admin) }
 
-          expect(response.status).to eq(200)
-          expect(response.body).to be_blank
+          context "when the room is locked" do
+            let!(:room) { create(:room, :locked) }
+
+            context "when the user is in the room" do
+              before do
+                room.users << user
+              end
+
+              it "unlocks the room" do
+                expect {
+                  post "/room/#{room.id}/unlock"
+                }.to change {
+                  room.reload.locked?
+                }.from(true).to(false)
+
+                expect(response.status).to eq(200)
+                expect(response.body).to be_blank
+              end
+
+              it "deletes private messsages" do
+                message_1 = create(:text_message, room: room)
+                message_2 = create(:lock_message, room: room)
+                message_3 = create(:text_message, :private, room: room)
+                message_4 = create(:text_message, :private, room: room)
+
+                post "/room/#{room.id}/unlock"
+
+                messages = room.messages
+                expect(messages).to include(message_1, message_2)
+                expect(messages).not_to include(message_3, message_4)
+              end
+
+              it "posts an unlock message" do
+                expect {
+                  post "/room/#{room.id}/unlock"
+                }.to change {
+                  Message.count
+                }.by(1)
+
+                message = Message.last
+                expect(message).to be_a(UnlockMessage)
+                expect(message.user_id).to eq(user.id)
+                expect(message.room_id).to eq(room.id)
+                expect(message).not_to be_private
+              end
+            end
+
+            context "when the user is not in the room" do
+              it "unlocks the room" do
+                expect {
+                  post "/room/#{room.id}/unlock"
+                }.to change {
+                  room.reload.locked?
+                }.from(true).to(false)
+
+                expect(response.status).to eq(200)
+                expect(response.body).to be_blank
+              end
+
+              it "deletes private messsages" do
+                message_1 = create(:text_message, room: room)
+                message_2 = create(:lock_message, room: room)
+                message_3 = create(:text_message, :private, room: room)
+                message_4 = create(:text_message, :private, room: room)
+
+                post "/room/#{room.id}/unlock"
+
+                messages = room.messages
+                expect(messages).to include(message_1, message_2)
+                expect(messages).not_to include(message_3, message_4)
+              end
+
+              it "posts an unlock message" do
+                expect {
+                  post "/room/#{room.id}/unlock"
+                }.to change {
+                  Message.count
+                }.by(1)
+
+                message = Message.last
+                expect(message).to be_a(UnlockMessage)
+                expect(message.user_id).to eq(user.id)
+                expect(message.room_id).to eq(room.id)
+                expect(message).not_to be_private
+              end
+            end
+          end
+
+          context "when the room is unlocked" do
+            let!(:room) { create(:room, :unlocked) }
+
+            context "when the user is in the room" do
+              before do
+                room.users << user
+              end
+
+              it "keeps the room unlocked" do
+                expect {
+                  post "/room/#{room.id}/unlock"
+                }.not_to change {
+                  room.reload.locked?
+                }
+
+                expect(response.status).to eq(200)
+                expect(response.body).to be_blank
+              end
+
+              it "doesn't post an unlock message" do
+                expect {
+                  post "/room/#{room.id}/unlock"
+                }.not_to change {
+                  Message.count
+                }
+              end
+            end
+
+            context "when the user is not in the room" do
+              it "keeps the room unlocked" do
+                expect {
+                  post "/room/#{room.id}/unlock"
+                }.not_to change {
+                  room.reload.locked?
+                }
+
+                expect(response.status).to eq(200)
+                expect(response.body).to be_blank
+              end
+
+              it "doesn't post an unlock message" do
+                expect {
+                  post "/room/#{room.id}/unlock"
+                }.not_to change {
+                  Message.count
+                }
+              end
+            end
+          end
         end
 
-        it "deletes private messsages" do
-          message_1 = create(:text_message, room: room)
-          message_2 = create(:lock_message, room: room)
-          message_3 = create(:text_message, :private, room: room)
-          message_4 = create(:text_message, :private, room: room)
+        context "as a member" do
+          let!(:user) { create(:user) }
 
-          post "/room/#{room.id}/unlock"
+          context "when the room is locked" do
+            let!(:room) { create(:room, :locked) }
 
-          messages = room.messages
-          expect(messages).to include(message_1, message_2)
-          expect(messages).not_to include(message_3, message_4)
-        end
+            context "when the user is in the room" do
+              before do
+                room.users << user
+              end
 
-        it "posts an unlock message" do
-          post "/room/#{room.id}/unlock"
+              it "unlocks the room" do
+                expect {
+                  post "/room/#{room.id}/unlock"
+                }.to change {
+                  room.reload.locked?
+                }.from(true).to(false)
 
-          message = Message.last
-          expect(message).to be_a(UnlockMessage)
-          expect(message.user_id).to eq(user.id)
-          expect(message.room_id).to eq(room.id)
-          expect(message).not_to be_private
+                expect(response.status).to eq(200)
+                expect(response.body).to be_blank
+              end
+
+              it "deletes private messsages" do
+                message_1 = create(:text_message, room: room)
+                message_2 = create(:lock_message, room: room)
+                message_3 = create(:text_message, :private, room: room)
+                message_4 = create(:text_message, :private, room: room)
+
+                post "/room/#{room.id}/unlock"
+
+                messages = room.messages
+                expect(messages).to include(message_1, message_2)
+                expect(messages).not_to include(message_3, message_4)
+              end
+
+              it "posts an unlock message" do
+                expect {
+                  post "/room/#{room.id}/unlock"
+                }.to change {
+                  Message.count
+                }.by(1)
+
+                message = Message.last
+                expect(message).to be_a(UnlockMessage)
+                expect(message.user_id).to eq(user.id)
+                expect(message.room_id).to eq(room.id)
+                expect(message).not_to be_private
+              end
+            end
+
+            context "when the user is not in the room" do
+              it "denies access to the room" do
+                expect {
+                  post "/room/#{room.id}/unlock"
+                }.not_to change {
+                  room.reload.locked?
+                }
+
+                expect(response.status).to eq(423)
+                expect(response.body).to be_blank
+              end
+
+              it "doesn't delete private messsages" do
+                message_1 = create(:text_message, room: room)
+                message_2 = create(:lock_message, room: room)
+                message_3 = create(:text_message, :private, room: room)
+                message_4 = create(:text_message, :private, room: room)
+
+                post "/room/#{room.id}/unlock"
+
+                messages = room.messages
+                expect(messages).to include(message_1, message_2)
+                expect(messages).to include(message_3, message_4)
+              end
+
+              it "doesn't post an unlock message" do
+                expect {
+                  post "/room/#{room.id}/unlock"
+                }.not_to change {
+                  Message.count
+                }
+              end
+            end
+          end
+
+          context "when the room is unlocked" do
+            let!(:room) { create(:room, :unlocked) }
+
+            context "when the user is in the room" do
+              before do
+                room.users << user
+              end
+
+              it "keeps the room unlocked" do
+                expect {
+                  post "/room/#{room.id}/unlock"
+                }.not_to change {
+                  room.reload.locked?
+                }
+
+                expect(response.status).to eq(200)
+                expect(response.body).to be_blank
+              end
+
+              it "doesn't post an unlock message" do
+                expect {
+                  post "/room/#{room.id}/unlock"
+                }.not_to change {
+                  Message.count
+                }
+              end
+            end
+
+            context "when the user is not in the room" do
+              it "keeps the room unlocked" do
+                expect {
+                  post "/room/#{room.id}/unlock"
+                }.not_to change {
+                  room.reload.locked?
+                }
+
+                expect(response.status).to eq(200)
+                expect(response.body).to be_blank
+              end
+
+              it "doesn't post an unlock message" do
+                expect {
+                  post "/room/#{room.id}/unlock"
+                }.not_to change {
+                  Message.count
+                }
+              end
+            end
+          end
         end
       end
 
       context "when unauthenticated" do
+        let!(:room) { create(:room, :locked) }
+
         it "requires authentication" do
           expect {
             post "/room/#{room.id}/unlock"

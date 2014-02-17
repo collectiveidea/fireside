@@ -41,16 +41,28 @@ class RoomsController < ApplicationController
   end
 
   def lock
-    LockMessage.post(current_user, @room)
-    @room.lock
+    if @room.unlocked?
+      LockMessage.post(current_user, @room)
+      @room.lock
+    end
+
     head :ok
   end
 
   def unlock
-    @room.unlock
-    @room.clean
-    UnlockMessage.post(current_user, @room)
-    head :ok
+    if @room.locked?
+      if current_user.admin? || current_user.in_room?(@room)
+        @room.clean
+        @room.unlock
+        UnlockMessage.post(current_user, @room)
+
+        head :ok
+      else
+        head :locked
+      end
+    else
+      head :ok
+    end
   end
 
   private
