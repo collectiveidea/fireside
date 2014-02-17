@@ -455,8 +455,6 @@ describe "Room Requests" do
     end
 
     describe "POST /room/:id/lock" do
-      let!(:room) { create(:room) }
-
       context "when authenticated" do
         let!(:user) { create(:user) }
 
@@ -464,33 +462,62 @@ describe "Room Requests" do
           authenticate(user.api_auth_token)
         end
 
-        it "locks the room" do
-          expect {
-            post "/room/#{room.id}/lock"
-          }.to change {
-            room.reload.locked?
-          }.from(false).to(true)
+        context "when unlocked" do
+          let!(:room) { create(:room, :unlocked) }
 
-          expect(response.status).to eq(200)
-          expect(response.body).to be_blank
+          it "locks the room" do
+            expect {
+              post "/room/#{room.id}/lock"
+            }.to change {
+              room.reload.locked?
+            }.from(false).to(true)
+
+            expect(response.status).to eq(200)
+            expect(response.body).to be_blank
+          end
+
+          it "posts a lock message" do
+            expect {
+              post "/room/#{room.id}/lock"
+            }.to change {
+              Message.count
+            }.by(1)
+
+            message = Message.last
+            expect(message).to be_a(LockMessage)
+            expect(message.user_id).to eq(user.id)
+            expect(message.room_id).to eq(room.id)
+            expect(message).not_to be_private
+          end
         end
 
-        it "posts a lock message" do
-          expect {
-            post "/room/#{room.id}/lock"
-          }.to change {
-            Message.count
-          }.by(1)
+        context "when locked" do
+          let!(:room) { create(:room, :locked) }
 
-          message = Message.last
-          expect(message).to be_a(LockMessage)
-          expect(message.user_id).to eq(user.id)
-          expect(message.room_id).to eq(room.id)
-          expect(message).not_to be_private
+          it "keeps the room locked" do
+            expect {
+              post "/room/#{room.id}/lock"
+            }.not_to change {
+              room.reload.locked?
+            }
+
+            expect(response.status).to eq(200)
+            expect(response.body).to be_blank
+          end
+
+          it "doesn't post a lock message" do
+            expect {
+              post "/room/#{room.id}/lock"
+            }.not_to change {
+              Message.count
+            }
+          end
         end
       end
 
       context "when unauthenticated" do
+        let!(:room) { create(:room, :unlocked) }
+
         it "requires authentication" do
           expect {
             post "/room/#{room.id}/lock"

@@ -10,5 +10,9 @@ FactoryGirl.define do
     trait :locked do
       locked true
     end
+
+    trait :unlocked do
+      locked false
+    end
   end
 end
