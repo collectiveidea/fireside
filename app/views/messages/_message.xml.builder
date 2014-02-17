@@ -1,6 +1,6 @@
 xml.message do
   xml.body message.body
-  xml.tag! "created-at", message.created_at, type: "datetime"
+  xml.tag! "created-at", message.created_at.xmlschema, type: "datetime"
   xml.id message.id, type: "integer"
   xml.tag! "room-id", message.room_id, type: "integer"
   xml.starred message.starred?, type: "boolean"
