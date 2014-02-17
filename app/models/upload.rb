@@ -36,6 +36,11 @@ class Upload < ActiveRecord::Base
     file.content_type
   end
 
+  def full_url
+    url = file.url
+    url =~ /^http/ ? url : "#{ENV["PROTOCOL"]}://#{ENV["HOST"]}#{url}"
+  end
+
   def name
     file.original_filename
   end
