@@ -1,6 +1,26 @@
 require "spec_helper"
 
 describe Message do
+  describe "validation" do
+    context TextMessage do
+      it "requires a body" do
+        message = build(:text_message)
+
+        expect(message).to accept_values_for(:body, "Hello", "world")
+        expect(message).not_to accept_values_for(:body, nil, "", " ")
+      end
+    end
+
+    context PasteMessage do
+      it "requires a body" do
+        message = build(:paste_message)
+
+        expect(message).to accept_values_for(:body, "Hello", "world")
+        expect(message).not_to accept_values_for(:body, nil, "", " ")
+      end
+    end
+  end
+
   describe ".old_to_new" do
     it "orders messages oldest to newest" do
       messages = [
