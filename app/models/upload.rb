@@ -21,7 +21,7 @@ class Upload < ActiveRecord::Base
   end
 
   validates :user_id, :room_id, presence: true, strict: true
-  validates_attachment :file, presence: true, size: { in: 0..10.megabytes }
+  validates_attachment :file, presence: true
   do_not_validate_attachment_file_type :file
 
   def self.old_to_new
