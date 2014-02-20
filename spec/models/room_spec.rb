@@ -1,6 +1,22 @@
 require "spec_helper"
 
 describe Room do
+  describe "validation" do
+    let(:room) { build(:room) }
+
+    it "requires a name" do
+      expect(room).to accept_values_for(:name, "Water Cooler", "Break Room")
+      expect(room).not_to accept_values_for(:name, nil, "", " ")
+    end
+
+    it "requires a unique name" do
+      create(:room, name: "Water Cooler")
+
+      expect(room).to accept_values_for(:name, "Break Room")
+      expect(room).not_to accept_values_for(:name, "Water Cooler")
+    end
+  end
+
   describe ".old_to_new" do
     it "orders rooms oldest to newest" do
       rooms = [
