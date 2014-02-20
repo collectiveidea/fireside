@@ -4,9 +4,6 @@ describe "Upload Requests" do
   with_formats(:json, :xml) do
     describe "GET /room/:room_id/uploads" do
       let!(:room) { create(:room) }
-      let!(:old_upload) { create(:upload, room: room) }
-      let!(:new_upload) { create(:upload, room: room) }
-      let!(:other_upload) { create(:upload) }
 
       context "when authenticated" do
         let!(:user) { create(:user) }
@@ -16,6 +13,10 @@ describe "Upload Requests" do
         end
 
         it "lists uploads old to new" do
+          old_upload = create(:upload, room: room)
+          new_upload = create(:upload, room: room)
+          create(:upload)
+
           get "/room/#{room.id}/uploads"
 
           expect(response.status).to eq(200)
@@ -44,11 +45,20 @@ describe "Upload Requests" do
             ]
           )
         end
+
+        it "limits to 5 uploads" do
+          create_list(:upload, 6, room: room)
+
+          get "/room/#{room.id}/uploads"
+
+          expect(response.status).to eq(200)
+          expect(response.content.to_hash["uploads"]).to have(5).uploads
+        end
       end
 
       context "when unauthenticated" do
         it "requires authentication" do
-          get "/room/#{room.id}/recent"
+          get "/room/#{room.id}/uploads"
 
           expect(response.status).to eq(401)
         end

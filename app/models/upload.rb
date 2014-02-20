@@ -10,8 +10,8 @@ class Upload < ActiveRecord::Base
   validates_attachment :file, presence: true
   do_not_validate_attachment_file_type :file
 
-  def self.old_to_new
-    order(:created_at)
+  def self.for_room(room)
+    where(room_id: room).order(:created_at).limit(5)
   end
 
   def byte_size

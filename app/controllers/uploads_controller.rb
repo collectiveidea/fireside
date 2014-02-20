@@ -6,7 +6,7 @@ class UploadsController < ApplicationController
   before_action :load_room
 
   def index
-    @uploads = @room.uploads.old_to_new
+    @uploads = Upload.for_room(@room)
   end
 
   def show
