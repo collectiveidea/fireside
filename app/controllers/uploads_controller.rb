@@ -6,7 +6,11 @@ class UploadsController < ApplicationController
   before_action :load_room
 
   def index
-    @uploads = Upload.for_room(@room)
+    if current_user.admin? || current_user.in_room?(@room) || @room.unlocked?
+      @uploads = Upload.for_room(@room)
+    else
+      head :locked
+    end
   end
 
   def show
