@@ -1,6 +1,40 @@
 require "spec_helper"
 
 describe User do
+  describe "validation" do
+    let(:user) { build(:user) }
+
+    it "requires a name" do
+      expect(user).to accept_values_for(:name, "John", "Jane")
+      expect(user).not_to accept_values_for(:name, nil, "", " ")
+    end
+
+    it "requires a valid email address" do
+      expect(user).to accept_values_for(:email, "john@example.com", "jane@example.org")
+      expect(user).not_to accept_values_for(:email, nil, "", " ", "john", "jane@example")
+    end
+
+    it "requires a unique email address" do
+      create(:user, email: "john@example.com")
+
+      expect(user).to accept_values_for(:email, "jane@example.org")
+      expect(user).not_to accept_values_for(:email, "john@example.com")
+    end
+
+    it "requires a password on creation" do
+      user = build(:user, password: nil)
+
+      expect(user).not_to accept_values_for(:password, nil, "", " ")
+      expect(user).to accept_values_for(:password, "secret", "deep dark secret")
+    end
+
+    it "doesn't require a password on updation" do
+      user = create(:user)
+
+      expect(user).to accept_values_for(:password, nil, "", " ", "secret", "deep dark secret")
+    end
+  end
+
   describe "#avatar_url" do
     it "is the Gravatar image URL for the user's email address" do
       user = create(:user, email: "John.Doe@gmail.com ")

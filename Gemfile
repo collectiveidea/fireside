@@ -18,6 +18,7 @@ gem "puma", "~> 2.7"
 gem "twitter", "~> 5.7"
 
 group :development, :test do
+  gem "accept_values_for", "~> 0.4.3"
   gem "database_cleaner", "~> 1.2"
   gem "factory_girl_rails", "~> 4.4"
   gem "pry"

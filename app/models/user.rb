@@ -1,7 +1,7 @@
 class User < ActiveRecord::Base
   GRAVATAR_URL_TEMPLATE = "https://secure.gravatar.com/avatar/%s?d=mm&s=55"
 
-  has_secure_password
+  has_secure_password validations: false
 
   has_many :messages, inverse_of: :user, dependent: :nullify
   has_many :presences, inverse_of: :user, dependent: :destroy
@@ -10,6 +10,7 @@ class User < ActiveRecord::Base
 
   validates :name, presence: true
   validates :email, presence: true, email: true, uniqueness: true
+  validates :password, presence: true, on: :create
 
   before_create :set_api_auth_token
 
