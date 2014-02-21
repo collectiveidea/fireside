@@ -38,7 +38,7 @@ class Room < ActiveRecord::Base
   end
 
   def upload_file_for_user(file, user)
-    uploads.create(file: file, user: user)
+    uploads.create(file: file, user: user, private: locked?)
   end
 
   def on_message

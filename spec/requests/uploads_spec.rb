@@ -216,7 +216,6 @@ describe "Upload Requests" do
     end
 
     describe "POST /room/:room_id/uploads" do
-      let!(:room) { create(:room) }
       let(:file) {
         path = Rails.root.join("spec/support/campfire.gif")
         Rack::Test::UploadedFile.new(path, "image/gif")
@@ -232,51 +231,107 @@ describe "Upload Requests" do
         context "when given a file" do
           let(:params) { { upload: file } }
 
-          it "creates an upload" do
-            expect {
-              post "/room/#{room.id}/uploads", params, "Content-Type" => "multipart/form-data"
-            }.to change {
-              Upload.count
-            }.from(0).to(1)
+          context "when the room is locked" do
+            let!(:room) { create(:room, :locked) }
 
-            upload = Upload.last
+            it "creates an upload" do
+              expect {
+                post "/room/#{room.id}/uploads", params, "Content-Type" => "multipart/form-data"
+              }.to change {
+                Upload.count
+              }.from(0).to(1)
 
-            expect(upload.user_id).to eq(user.id)
-            expect(upload.room_id).to eq(room.id)
-            expect(upload.byte_size).to eq(931562)
-            expect(upload.content_type).to eq("image/gif")
-            expect(upload.name).to eq("campfire.gif")
+              upload = Upload.last
 
-            expect(response.status).to eq(201)
-            expect(response.content).to eq(
-              "upload" => {
-                "byte_size" => upload.byte_size,
-                "content_type" => upload.content_type,
-                "created_at" => upload.created_at,
-                "full_url" => upload.full_url,
-                "id" => upload.id,
-                "name" => upload.name,
-                "room_id" => upload.room_id,
-                "user_id" => upload.user_id
-              }
-            )
+              expect(upload.user_id).to eq(user.id)
+              expect(upload.room_id).to eq(room.id)
+              expect(upload.byte_size).to eq(931562)
+              expect(upload.content_type).to eq("image/gif")
+              expect(upload.name).to eq("campfire.gif")
+              expect(upload).to be_private
+
+              expect(response.status).to eq(201)
+              expect(response.content).to eq(
+                "upload" => {
+                  "byte_size" => upload.byte_size,
+                  "content_type" => upload.content_type,
+                  "created_at" => upload.created_at,
+                  "full_url" => upload.full_url,
+                  "id" => upload.id,
+                  "name" => upload.name,
+                  "room_id" => upload.room_id,
+                  "user_id" => upload.user_id
+                }
+              )
+            end
+
+            it "posts an upload message" do
+              expect {
+                post "/room/#{room.id}/uploads", params, "Content-Type" => "multipart/form-data"
+              }.to change {
+                Message.count
+              }.by(1)
+
+              message = Message.last
+              expect(message).to be_a(UploadMessage)
+              expect(message.user_id).to eq(user.id)
+              expect(message.room_id).to eq(room.id)
+              expect(message).to be_private
+            end
           end
 
-          it "posts an upload message" do
-            expect {
-              post "/room/#{room.id}/uploads", params, "Content-Type" => "multipart/form-data"
-            }.to change {
-              Message.count
-            }.by(1)
+          context "when the room is unlocked" do
+            let!(:room) { create(:room, :unlocked) }
 
-            message = Message.last
-            expect(message).to be_a(UploadMessage)
-            expect(message.user_id).to eq(user.id)
-            expect(message.room_id).to eq(room.id)
+            it "creates an upload" do
+              expect {
+                post "/room/#{room.id}/uploads", params, "Content-Type" => "multipart/form-data"
+              }.to change {
+                Upload.count
+              }.from(0).to(1)
+
+              upload = Upload.last
+
+              expect(upload.user_id).to eq(user.id)
+              expect(upload.room_id).to eq(room.id)
+              expect(upload.byte_size).to eq(931562)
+              expect(upload.content_type).to eq("image/gif")
+              expect(upload.name).to eq("campfire.gif")
+              expect(upload).not_to be_private
+
+              expect(response.status).to eq(201)
+              expect(response.content).to eq(
+                "upload" => {
+                  "byte_size" => upload.byte_size,
+                  "content_type" => upload.content_type,
+                  "created_at" => upload.created_at,
+                  "full_url" => upload.full_url,
+                  "id" => upload.id,
+                  "name" => upload.name,
+                  "room_id" => upload.room_id,
+                  "user_id" => upload.user_id
+                }
+              )
+            end
+
+            it "posts an upload message" do
+              expect {
+                post "/room/#{room.id}/uploads", params, "Content-Type" => "multipart/form-data"
+              }.to change {
+                Message.count
+              }.by(1)
+
+              message = Message.last
+              expect(message).to be_a(UploadMessage)
+              expect(message.user_id).to eq(user.id)
+              expect(message.room_id).to eq(room.id)
+              expect(message).not_to be_private
+            end
           end
         end
 
         context "when given a value" do
+          let!(:room) { create(:room) }
           let(:params) { { upload: "foo" } }
 
           it "doesn't create an upload" do
@@ -299,6 +354,7 @@ describe "Upload Requests" do
         end
 
         context "when given nothing" do
+          let!(:room) { create(:room) }
           let(:params) { {} }
 
           it "doesn't create an upload" do
@@ -322,6 +378,8 @@ describe "Upload Requests" do
       end
 
       context "when unauthenticated" do
+        let!(:room) { create(:room) }
+
         it "requires authentication" do
           expect {
             post "/room/#{room.id}/uploads", { upload: file }, { "Content-Type" => "multipart/form-data" }
