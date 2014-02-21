@@ -12,9 +12,10 @@ describe "Upload Requests" do
           let!(:user) { create(:user, :admin) }
           let!(:room) { create(:room, :locked) }
 
-          it "lists uploads old to new" do
+          it "lists public uploads old to new" do
             old_upload = create(:upload, room: room)
             new_upload = create(:upload, room: room)
+            create(:upload, :private, room: room)
             create(:upload)
 
             get "/room/#{room.id}/uploads"
@@ -119,7 +120,7 @@ describe "Upload Requests" do
 
     describe "GET /room/:room_id/messages/:message_id/upload" do
       let!(:message) { create(:upload_message, room: room) }
-      let!(:upload) { create(:upload, room: room, message: message) }
+      let!(:upload) { create(:upload, :private, room: room, message: message) }
 
       context "when authenticated" do
         before do

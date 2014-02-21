@@ -14,7 +14,7 @@ class Upload < ActiveRecord::Base
   do_not_validate_attachment_file_type :file
 
   def self.for_room(room)
-    where(room_id: room).order(:created_at).limit(5)
+    where(room_id: room, private: false).order(:created_at).limit(5)
   end
 
   def self.for_message(message)
