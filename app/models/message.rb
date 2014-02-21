@@ -313,7 +313,7 @@ end
 class UploadMessage < Message
   validates :user_id, presence: true, strict: true
 
-  def self.post(user, room, upload)
-    create!(user: user, room: room, private: room.locked?, metadata: { "upload_id" => upload.id })
+  def self.post(user, room)
+    create!(user: user, room: room, private: room.locked?)
   end
 end

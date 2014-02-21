@@ -118,8 +118,8 @@ describe "Upload Requests" do
     end
 
     describe "GET /room/:room_id/messages/:message_id/upload" do
-      let!(:upload) { create(:upload, room: room) }
-      let!(:message) { create(:upload_message, room: room, upload: upload) }
+      let!(:message) { create(:upload_message, room: room) }
+      let!(:upload) { create(:upload, room: room, message: message) }
 
       context "when authenticated" do
         before do
@@ -146,6 +146,19 @@ describe "Upload Requests" do
                 "user_id" => upload.user_id
               }
             )
+          end
+
+          context "after the original message has been deleted" do
+            before do
+              message.destroy!
+            end
+
+            it "shows the upload" do
+              get "/room/#{room.id}/messages/#{message.id}/upload"
+
+              expect(response.status).to eq(200)
+              expect(response.content.to_hash).to have_key("upload")
+            end
           end
         end
 

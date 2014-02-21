@@ -15,8 +15,7 @@ class UploadsController < ApplicationController
 
   def show
     if current_user.admin? || current_user.in_room?(@room) || @room.unlocked?
-      message = @room.messages.find(params[:message_id])
-      @upload = @room.uploads.find(message.metadata["upload_id"])
+      @upload = Upload.for_message(params[:message_id])
     else
       head :locked
     end
@@ -26,7 +25,8 @@ class UploadsController < ApplicationController
     @upload = @room.upload_file_for_user(params[:upload], current_user)
 
     if @upload.persisted?
-      UploadMessage.post(current_user, @room, @upload)
+      message = UploadMessage.post(current_user, @room)
+      @upload.attach_to_message(message)
 
       render :show, status: :created
     else
