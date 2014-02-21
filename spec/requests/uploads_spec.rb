@@ -10,201 +10,49 @@ describe "Upload Requests" do
 
         context "as an admin" do
           let!(:user) { create(:user, :admin) }
+          let!(:room) { create(:room, :locked) }
 
-          context "when the room is locked" do
-            let!(:room) { create(:room, :locked) }
+          it "lists uploads old to new" do
+            old_upload = create(:upload, room: room)
+            new_upload = create(:upload, room: room)
+            create(:upload)
 
-            context "when the user is in the room" do
-              before do
-                room.users << user
-              end
+            get "/room/#{room.id}/uploads"
 
-              it "lists uploads old to new" do
-                old_upload = create(:upload, room: room)
-                new_upload = create(:upload, room: room)
-                create(:upload)
-
-                get "/room/#{room.id}/uploads"
-
-                expect(response.status).to eq(200)
-                expect(response.content).to eq(
-                  "uploads" => [
-                    {
-                      "byte_size" => old_upload.byte_size,
-                      "content_type" => old_upload.content_type,
-                      "created_at" => old_upload.created_at,
-                      "full_url" => old_upload.full_url,
-                      "id" => old_upload.id,
-                      "name" => old_upload.name,
-                      "room_id" => old_upload.room_id,
-                      "user_id" => old_upload.user_id
-                    },
-                    {
-                      "byte_size" => new_upload.byte_size,
-                      "content_type" => new_upload.content_type,
-                      "created_at" => new_upload.created_at,
-                      "full_url" => new_upload.full_url,
-                      "id" => new_upload.id,
-                      "name" => new_upload.name,
-                      "room_id" => new_upload.room_id,
-                      "user_id" => new_upload.user_id
-                    }
-                  ]
-                )
-              end
-
-              it "limits to 5 uploads" do
-                create_list(:upload, 6, room: room)
-
-                get "/room/#{room.id}/uploads"
-
-                expect(response.status).to eq(200)
-                expect(response.content.to_hash["uploads"]).to have(5).uploads
-              end
-            end
-
-            context "when the user is not in the room" do
-              it "lists uploads old to new" do
-                old_upload = create(:upload, room: room)
-                new_upload = create(:upload, room: room)
-                create(:upload)
-
-                get "/room/#{room.id}/uploads"
-
-                expect(response.status).to eq(200)
-                expect(response.content).to eq(
-                  "uploads" => [
-                    {
-                      "byte_size" => old_upload.byte_size,
-                      "content_type" => old_upload.content_type,
-                      "created_at" => old_upload.created_at,
-                      "full_url" => old_upload.full_url,
-                      "id" => old_upload.id,
-                      "name" => old_upload.name,
-                      "room_id" => old_upload.room_id,
-                      "user_id" => old_upload.user_id
-                    },
-                    {
-                      "byte_size" => new_upload.byte_size,
-                      "content_type" => new_upload.content_type,
-                      "created_at" => new_upload.created_at,
-                      "full_url" => new_upload.full_url,
-                      "id" => new_upload.id,
-                      "name" => new_upload.name,
-                      "room_id" => new_upload.room_id,
-                      "user_id" => new_upload.user_id
-                    }
-                  ]
-                )
-              end
-
-              it "limits to 5 uploads" do
-                create_list(:upload, 6, room: room)
-
-                get "/room/#{room.id}/uploads"
-
-                expect(response.status).to eq(200)
-                expect(response.content.to_hash["uploads"]).to have(5).uploads
-              end
-            end
+            expect(response.status).to eq(200)
+            expect(response.content).to eq(
+              "uploads" => [
+                {
+                  "byte_size" => old_upload.byte_size,
+                  "content_type" => old_upload.content_type,
+                  "created_at" => old_upload.created_at,
+                  "full_url" => old_upload.full_url,
+                  "id" => old_upload.id,
+                  "name" => old_upload.name,
+                  "room_id" => old_upload.room_id,
+                  "user_id" => old_upload.user_id
+                },
+                {
+                  "byte_size" => new_upload.byte_size,
+                  "content_type" => new_upload.content_type,
+                  "created_at" => new_upload.created_at,
+                  "full_url" => new_upload.full_url,
+                  "id" => new_upload.id,
+                  "name" => new_upload.name,
+                  "room_id" => new_upload.room_id,
+                  "user_id" => new_upload.user_id
+                }
+              ]
+            )
           end
 
-          context "when the room is unlocked" do
-            let!(:room) { create(:room, :unlocked) }
+          it "limits to 5 uploads" do
+            create_list(:upload, 6, room: room)
 
-            context "when the user is in the room" do
-              before do
-                room.users << user
-              end
+            get "/room/#{room.id}/uploads"
 
-              it "lists uploads old to new" do
-                old_upload = create(:upload, room: room)
-                new_upload = create(:upload, room: room)
-                create(:upload)
-
-                get "/room/#{room.id}/uploads"
-
-                expect(response.status).to eq(200)
-                expect(response.content).to eq(
-                  "uploads" => [
-                    {
-                      "byte_size" => old_upload.byte_size,
-                      "content_type" => old_upload.content_type,
-                      "created_at" => old_upload.created_at,
-                      "full_url" => old_upload.full_url,
-                      "id" => old_upload.id,
-                      "name" => old_upload.name,
-                      "room_id" => old_upload.room_id,
-                      "user_id" => old_upload.user_id
-                    },
-                    {
-                      "byte_size" => new_upload.byte_size,
-                      "content_type" => new_upload.content_type,
-                      "created_at" => new_upload.created_at,
-                      "full_url" => new_upload.full_url,
-                      "id" => new_upload.id,
-                      "name" => new_upload.name,
-                      "room_id" => new_upload.room_id,
-                      "user_id" => new_upload.user_id
-                    }
-                  ]
-                )
-              end
-
-              it "limits to 5 uploads" do
-                create_list(:upload, 6, room: room)
-
-                get "/room/#{room.id}/uploads"
-
-                expect(response.status).to eq(200)
-                expect(response.content.to_hash["uploads"]).to have(5).uploads
-              end
-            end
-
-            context "when the user is not in the room" do
-              it "lists uploads old to new" do
-                old_upload = create(:upload, room: room)
-                new_upload = create(:upload, room: room)
-                create(:upload)
-
-                get "/room/#{room.id}/uploads"
-
-                expect(response.status).to eq(200)
-                expect(response.content).to eq(
-                  "uploads" => [
-                    {
-                      "byte_size" => old_upload.byte_size,
-                      "content_type" => old_upload.content_type,
-                      "created_at" => old_upload.created_at,
-                      "full_url" => old_upload.full_url,
-                      "id" => old_upload.id,
-                      "name" => old_upload.name,
-                      "room_id" => old_upload.room_id,
-                      "user_id" => old_upload.user_id
-                    },
-                    {
-                      "byte_size" => new_upload.byte_size,
-                      "content_type" => new_upload.content_type,
-                      "created_at" => new_upload.created_at,
-                      "full_url" => new_upload.full_url,
-                      "id" => new_upload.id,
-                      "name" => new_upload.name,
-                      "room_id" => new_upload.room_id,
-                      "user_id" => new_upload.user_id
-                    }
-                  ]
-                )
-              end
-
-              it "limits to 5 uploads" do
-                create_list(:upload, 6, room: room)
-
-                get "/room/#{room.id}/uploads"
-
-                expect(response.status).to eq(200)
-                expect(response.content.to_hash["uploads"]).to have(5).uploads
-              end
-            end
+            expect(response.status).to eq(200)
+            expect(response.content.to_hash["uploads"]).to have(5).uploads
           end
         end
 
@@ -220,46 +68,14 @@ describe "Upload Requests" do
               end
 
               it "lists uploads old to new" do
-                old_upload = create(:upload, room: room)
-                new_upload = create(:upload, room: room)
+                create(:upload, room: room)
+                create(:upload, room: room)
                 create(:upload)
 
                 get "/room/#{room.id}/uploads"
 
                 expect(response.status).to eq(200)
-                expect(response.content).to eq(
-                  "uploads" => [
-                    {
-                      "byte_size" => old_upload.byte_size,
-                      "content_type" => old_upload.content_type,
-                      "created_at" => old_upload.created_at,
-                      "full_url" => old_upload.full_url,
-                      "id" => old_upload.id,
-                      "name" => old_upload.name,
-                      "room_id" => old_upload.room_id,
-                      "user_id" => old_upload.user_id
-                    },
-                    {
-                      "byte_size" => new_upload.byte_size,
-                      "content_type" => new_upload.content_type,
-                      "created_at" => new_upload.created_at,
-                      "full_url" => new_upload.full_url,
-                      "id" => new_upload.id,
-                      "name" => new_upload.name,
-                      "room_id" => new_upload.room_id,
-                      "user_id" => new_upload.user_id
-                    }
-                  ]
-                )
-              end
-
-              it "limits to 5 uploads" do
-                create_list(:upload, 6, room: room)
-
-                get "/room/#{room.id}/uploads"
-
-                expect(response.status).to eq(200)
-                expect(response.content.to_hash["uploads"]).to have(5).uploads
+                expect(response.content.to_hash["uploads"]).to have(2).uploads
               end
             end
 
@@ -276,98 +92,15 @@ describe "Upload Requests" do
           context "when the room is unlocked" do
             let!(:room) { create(:room, :unlocked) }
 
-            context "when the user is in the room" do
-              before do
-                room.users << user
-              end
+            it "lists uploads" do
+              create(:upload, room: room)
+              create(:upload, room: room)
+              create(:upload)
 
-              it "lists uploads old to new" do
-                old_upload = create(:upload, room: room)
-                new_upload = create(:upload, room: room)
-                create(:upload)
+              get "/room/#{room.id}/uploads"
 
-                get "/room/#{room.id}/uploads"
-
-                expect(response.status).to eq(200)
-                expect(response.content).to eq(
-                  "uploads" => [
-                    {
-                      "byte_size" => old_upload.byte_size,
-                      "content_type" => old_upload.content_type,
-                      "created_at" => old_upload.created_at,
-                      "full_url" => old_upload.full_url,
-                      "id" => old_upload.id,
-                      "name" => old_upload.name,
-                      "room_id" => old_upload.room_id,
-                      "user_id" => old_upload.user_id
-                    },
-                    {
-                      "byte_size" => new_upload.byte_size,
-                      "content_type" => new_upload.content_type,
-                      "created_at" => new_upload.created_at,
-                      "full_url" => new_upload.full_url,
-                      "id" => new_upload.id,
-                      "name" => new_upload.name,
-                      "room_id" => new_upload.room_id,
-                      "user_id" => new_upload.user_id
-                    }
-                  ]
-                )
-              end
-
-              it "limits to 5 uploads" do
-                create_list(:upload, 6, room: room)
-
-                get "/room/#{room.id}/uploads"
-
-                expect(response.status).to eq(200)
-                expect(response.content.to_hash["uploads"]).to have(5).uploads
-              end
-            end
-
-            context "when the user is not in the room" do
-              it "lists uploads old to new" do
-                old_upload = create(:upload, room: room)
-                new_upload = create(:upload, room: room)
-                create(:upload)
-
-                get "/room/#{room.id}/uploads"
-
-                expect(response.status).to eq(200)
-                expect(response.content).to eq(
-                  "uploads" => [
-                    {
-                      "byte_size" => old_upload.byte_size,
-                      "content_type" => old_upload.content_type,
-                      "created_at" => old_upload.created_at,
-                      "full_url" => old_upload.full_url,
-                      "id" => old_upload.id,
-                      "name" => old_upload.name,
-                      "room_id" => old_upload.room_id,
-                      "user_id" => old_upload.user_id
-                    },
-                    {
-                      "byte_size" => new_upload.byte_size,
-                      "content_type" => new_upload.content_type,
-                      "created_at" => new_upload.created_at,
-                      "full_url" => new_upload.full_url,
-                      "id" => new_upload.id,
-                      "name" => new_upload.name,
-                      "room_id" => new_upload.room_id,
-                      "user_id" => new_upload.user_id
-                    }
-                  ]
-                )
-              end
-
-              it "limits to 5 uploads" do
-                create_list(:upload, 6, room: room)
-
-                get "/room/#{room.id}/uploads"
-
-                expect(response.status).to eq(200)
-                expect(response.content.to_hash["uploads"]).to have(5).uploads
-              end
+              expect(response.status).to eq(200)
+              expect(response.content.to_hash["uploads"]).to have(2).uploads
             end
           end
         end
@@ -395,101 +128,24 @@ describe "Upload Requests" do
 
         context "as an admin" do
           let!(:user) { create(:user, :admin) }
+          let!(:room) { create(:room, :locked) }
 
-          context "when the room is locked" do
-            let!(:room) { create(:room, :locked) }
+          it "shows the upload" do
+            get "/room/#{room.id}/messages/#{message.id}/upload"
 
-            context "when the user is in the room" do
-              before do
-                room.users << user
-              end
-
-              it "shows the upload" do
-                get "/room/#{room.id}/messages/#{message.id}/upload"
-
-                expect(response.status).to eq(200)
-                expect(response.content).to eq(
-                  "upload" => {
-                    "byte_size" => upload.byte_size,
-                    "content_type" => upload.content_type,
-                    "created_at" => upload.created_at,
-                    "full_url" => upload.full_url,
-                    "id" => upload.id,
-                    "name" => upload.name,
-                    "room_id" => upload.room_id,
-                    "user_id" => upload.user_id
-                  }
-                )
-              end
-            end
-
-            context "when the user is not in the room" do
-              it "shows the upload" do
-                get "/room/#{room.id}/messages/#{message.id}/upload"
-
-                expect(response.status).to eq(200)
-                expect(response.content).to eq(
-                  "upload" => {
-                    "byte_size" => upload.byte_size,
-                    "content_type" => upload.content_type,
-                    "created_at" => upload.created_at,
-                    "full_url" => upload.full_url,
-                    "id" => upload.id,
-                    "name" => upload.name,
-                    "room_id" => upload.room_id,
-                    "user_id" => upload.user_id
-                  }
-                )
-              end
-            end
-          end
-
-          context "when the room is unlocked" do
-            let!(:room) { create(:room, :unlocked) }
-
-            context "when the user is in the room" do
-              before do
-                room.users << user
-              end
-
-              it "shows the upload" do
-                get "/room/#{room.id}/messages/#{message.id}/upload"
-
-                expect(response.status).to eq(200)
-                expect(response.content).to eq(
-                  "upload" => {
-                    "byte_size" => upload.byte_size,
-                    "content_type" => upload.content_type,
-                    "created_at" => upload.created_at,
-                    "full_url" => upload.full_url,
-                    "id" => upload.id,
-                    "name" => upload.name,
-                    "room_id" => upload.room_id,
-                    "user_id" => upload.user_id
-                  }
-                )
-              end
-            end
-
-            context "when the user is not in the room" do
-              it "shows the upload" do
-                get "/room/#{room.id}/messages/#{message.id}/upload"
-
-                expect(response.status).to eq(200)
-                expect(response.content).to eq(
-                  "upload" => {
-                    "byte_size" => upload.byte_size,
-                    "content_type" => upload.content_type,
-                    "created_at" => upload.created_at,
-                    "full_url" => upload.full_url,
-                    "id" => upload.id,
-                    "name" => upload.name,
-                    "room_id" => upload.room_id,
-                    "user_id" => upload.user_id
-                  }
-                )
-              end
-            end
+            expect(response.status).to eq(200)
+            expect(response.content).to eq(
+              "upload" => {
+                "byte_size" => upload.byte_size,
+                "content_type" => upload.content_type,
+                "created_at" => upload.created_at,
+                "full_url" => upload.full_url,
+                "id" => upload.id,
+                "name" => upload.name,
+                "room_id" => upload.room_id,
+                "user_id" => upload.user_id
+              }
+            )
           end
         end
 
@@ -508,18 +164,7 @@ describe "Upload Requests" do
                 get "/room/#{room.id}/messages/#{message.id}/upload"
 
                 expect(response.status).to eq(200)
-                expect(response.content).to eq(
-                  "upload" => {
-                    "byte_size" => upload.byte_size,
-                    "content_type" => upload.content_type,
-                    "created_at" => upload.created_at,
-                    "full_url" => upload.full_url,
-                    "id" => upload.id,
-                    "name" => upload.name,
-                    "room_id" => upload.room_id,
-                    "user_id" => upload.user_id
-                  }
-                )
+                expect(response.content.to_hash).to have_key("upload")
               end
             end
 
@@ -536,48 +181,11 @@ describe "Upload Requests" do
           context "when the room is unlocked" do
             let!(:room) { create(:room, :unlocked) }
 
-            context "when the user is in the room" do
-              before do
-                room.users << user
-              end
+            it "shows the upload" do
+              get "/room/#{room.id}/messages/#{message.id}/upload"
 
-              it "shows the upload" do
-                get "/room/#{room.id}/messages/#{message.id}/upload"
-
-                expect(response.status).to eq(200)
-                expect(response.content).to eq(
-                  "upload" => {
-                    "byte_size" => upload.byte_size,
-                    "content_type" => upload.content_type,
-                    "created_at" => upload.created_at,
-                    "full_url" => upload.full_url,
-                    "id" => upload.id,
-                    "name" => upload.name,
-                    "room_id" => upload.room_id,
-                    "user_id" => upload.user_id
-                  }
-                )
-              end
-            end
-
-            context "when the user is not in the room" do
-              it "shows the upload" do
-                get "/room/#{room.id}/messages/#{message.id}/upload"
-
-                expect(response.status).to eq(200)
-                expect(response.content).to eq(
-                  "upload" => {
-                    "byte_size" => upload.byte_size,
-                    "content_type" => upload.content_type,
-                    "created_at" => upload.created_at,
-                    "full_url" => upload.full_url,
-                    "id" => upload.id,
-                    "name" => upload.name,
-                    "room_id" => upload.room_id,
-                    "user_id" => upload.user_id
-                  }
-                )
-              end
+              expect(response.status).to eq(200)
+              expect(response.content.to_hash).to have_key("upload")
             end
           end
         end
