@@ -17,7 +17,7 @@ Fireside::Application.routes.draw do
   get "room/:room_id/recent"                       => "messages#index"
   get "room/:room_id/transcript"                   => "messages#today"
   get "room/:room_id/transcript/:year/:month/:day" => "messages#date",
-    constraints: { year: /\d{4}/, month: /\d{2}/, day: /\d{2}/ }
+    constraints: { year: /\d{4}/, month: /\d{1,2}/, day: /\d{1,2}/ }
 
   post "room/:room_id/speak" => "messages#create"
 
