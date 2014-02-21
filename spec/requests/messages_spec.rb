@@ -302,6 +302,15 @@ describe "Message Requests" do
             ]
           )
         end
+
+        it "accepts single-digit month and day" do
+          create(:text_message, room: room, created_at: Time.new(2014, 2, 9, 12, 0, 0))
+
+          get "/room/#{room.id}/transcript/2014/2/9"
+
+          expect(response.status).to eq(200)
+          expect(response.content.to_hash["messages"]).to have(1).message
+        end
       end
 
       context "when unauthenticated" do
