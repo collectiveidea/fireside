@@ -14,8 +14,12 @@ class UploadsController < ApplicationController
   end
 
   def show
-    message = @room.messages.find(params[:message_id])
-    @upload = @room.uploads.find(message.metadata["upload_id"])
+    if current_user.admin? || current_user.in_room?(@room) || @room.unlocked?
+      message = @room.messages.find(params[:message_id])
+      @upload = @room.uploads.find(message.metadata["upload_id"])
+    else
+      head :locked
+    end
   end
 
   def create

@@ -385,37 +385,207 @@ describe "Upload Requests" do
     end
 
     describe "GET /room/:room_id/messages/:message_id/upload" do
-      let!(:room) { create(:room) }
       let!(:upload) { create(:upload, room: room) }
       let!(:message) { create(:upload_message, room: room, upload: upload) }
 
       context "when authenticated" do
-        let!(:user) { create(:user) }
-
         before do
           authenticate(user.api_auth_token)
         end
 
-        it "shows the upload" do
-          get "/room/#{room.id}/messages/#{message.id}/upload"
+        context "as an admin" do
+          let!(:user) { create(:user, :admin) }
 
-          expect(response.status).to eq(200)
-          expect(response.content).to eq(
-            "upload" => {
-              "byte_size" => upload.byte_size,
-              "content_type" => upload.content_type,
-              "created_at" => upload.created_at,
-              "full_url" => upload.full_url,
-              "id" => upload.id,
-              "name" => upload.name,
-              "room_id" => upload.room_id,
-              "user_id" => upload.user_id
-            }
-          )
+          context "when the room is locked" do
+            let!(:room) { create(:room, :locked) }
+
+            context "when the user is in the room" do
+              before do
+                room.users << user
+              end
+
+              it "shows the upload" do
+                get "/room/#{room.id}/messages/#{message.id}/upload"
+
+                expect(response.status).to eq(200)
+                expect(response.content).to eq(
+                  "upload" => {
+                    "byte_size" => upload.byte_size,
+                    "content_type" => upload.content_type,
+                    "created_at" => upload.created_at,
+                    "full_url" => upload.full_url,
+                    "id" => upload.id,
+                    "name" => upload.name,
+                    "room_id" => upload.room_id,
+                    "user_id" => upload.user_id
+                  }
+                )
+              end
+            end
+
+            context "when the user is not in the room" do
+              it "shows the upload" do
+                get "/room/#{room.id}/messages/#{message.id}/upload"
+
+                expect(response.status).to eq(200)
+                expect(response.content).to eq(
+                  "upload" => {
+                    "byte_size" => upload.byte_size,
+                    "content_type" => upload.content_type,
+                    "created_at" => upload.created_at,
+                    "full_url" => upload.full_url,
+                    "id" => upload.id,
+                    "name" => upload.name,
+                    "room_id" => upload.room_id,
+                    "user_id" => upload.user_id
+                  }
+                )
+              end
+            end
+          end
+
+          context "when the room is unlocked" do
+            let!(:room) { create(:room, :unlocked) }
+
+            context "when the user is in the room" do
+              before do
+                room.users << user
+              end
+
+              it "shows the upload" do
+                get "/room/#{room.id}/messages/#{message.id}/upload"
+
+                expect(response.status).to eq(200)
+                expect(response.content).to eq(
+                  "upload" => {
+                    "byte_size" => upload.byte_size,
+                    "content_type" => upload.content_type,
+                    "created_at" => upload.created_at,
+                    "full_url" => upload.full_url,
+                    "id" => upload.id,
+                    "name" => upload.name,
+                    "room_id" => upload.room_id,
+                    "user_id" => upload.user_id
+                  }
+                )
+              end
+            end
+
+            context "when the user is not in the room" do
+              it "shows the upload" do
+                get "/room/#{room.id}/messages/#{message.id}/upload"
+
+                expect(response.status).to eq(200)
+                expect(response.content).to eq(
+                  "upload" => {
+                    "byte_size" => upload.byte_size,
+                    "content_type" => upload.content_type,
+                    "created_at" => upload.created_at,
+                    "full_url" => upload.full_url,
+                    "id" => upload.id,
+                    "name" => upload.name,
+                    "room_id" => upload.room_id,
+                    "user_id" => upload.user_id
+                  }
+                )
+              end
+            end
+          end
+        end
+
+        context "as a member" do
+          let!(:user) { create(:user) }
+
+          context "when the room is locked" do
+            let!(:room) { create(:room, :locked) }
+
+            context "when the user is in the room" do
+              before do
+                room.users << user
+              end
+
+              it "shows the upload" do
+                get "/room/#{room.id}/messages/#{message.id}/upload"
+
+                expect(response.status).to eq(200)
+                expect(response.content).to eq(
+                  "upload" => {
+                    "byte_size" => upload.byte_size,
+                    "content_type" => upload.content_type,
+                    "created_at" => upload.created_at,
+                    "full_url" => upload.full_url,
+                    "id" => upload.id,
+                    "name" => upload.name,
+                    "room_id" => upload.room_id,
+                    "user_id" => upload.user_id
+                  }
+                )
+              end
+            end
+
+            context "when the user is not in the room" do
+              it "denies access" do
+                get "/room/#{room.id}/messages/#{message.id}/upload"
+
+                expect(response.status).to eq(423)
+                expect(response.body).to be_blank
+              end
+            end
+          end
+
+          context "when the room is unlocked" do
+            let!(:room) { create(:room, :unlocked) }
+
+            context "when the user is in the room" do
+              before do
+                room.users << user
+              end
+
+              it "shows the upload" do
+                get "/room/#{room.id}/messages/#{message.id}/upload"
+
+                expect(response.status).to eq(200)
+                expect(response.content).to eq(
+                  "upload" => {
+                    "byte_size" => upload.byte_size,
+                    "content_type" => upload.content_type,
+                    "created_at" => upload.created_at,
+                    "full_url" => upload.full_url,
+                    "id" => upload.id,
+                    "name" => upload.name,
+                    "room_id" => upload.room_id,
+                    "user_id" => upload.user_id
+                  }
+                )
+              end
+            end
+
+            context "when the user is not in the room" do
+              it "shows the upload" do
+                get "/room/#{room.id}/messages/#{message.id}/upload"
+
+                expect(response.status).to eq(200)
+                expect(response.content).to eq(
+                  "upload" => {
+                    "byte_size" => upload.byte_size,
+                    "content_type" => upload.content_type,
+                    "created_at" => upload.created_at,
+                    "full_url" => upload.full_url,
+                    "id" => upload.id,
+                    "name" => upload.name,
+                    "room_id" => upload.room_id,
+                    "user_id" => upload.user_id
+                  }
+                )
+              end
+            end
+          end
         end
       end
 
       context "when unauthenticated" do
+        let!(:room) { create(:room) }
+
         it "requires authentication" do
           get "/room/#{room.id}/messages/#{message.id}/upload"
 
