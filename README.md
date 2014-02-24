@@ -2,6 +2,11 @@
 
 Fireside is an open source chat application with a *familiar* API.
 
+[![Build Status](https://travis-ci.org/collectiveidea/fireside.png?branch=master)](https://travis-ci.org/collectiveidea/fireside)
+[![Coverage Status](https://codeclimate.com/repos/530bd5cc6956800fce000f65/badges/51dd7fadd3e7d299461c/coverage.png)](https://codeclimate.com/repos/530bd5cc6956800fce000f65/feed)
+[![Code Climate](https://codeclimate.com/repos/530bd5cc6956800fce000f65/badges/51dd7fadd3e7d299461c/gpa.png)](https://codeclimate.com/repos/530bd5cc6956800fce000f65/feed)
+[![Dependency Status](https://gemnasium.com/collectiveidea/fireside.png)](https://gemnasium.com/collectiveidea/fireside)
+
 ## Installation
 
 Fireside is a Rails application that can be deployed to your own server, but is
