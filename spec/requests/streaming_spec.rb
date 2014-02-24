@@ -18,7 +18,7 @@ describe "Streaming Requests", streaming: true do
 
             expect {
               message = create(:text_message, room: room)
-              sleep 0.1 # Wait for stream
+              sleep 1 # Wait for stream
             }.to change {
               chunks.size
             }.from(0).to(1)
@@ -35,7 +35,7 @@ describe "Streaming Requests", streaming: true do
 
             expect {
               message = create(:paste_message, room: room)
-              sleep 0.1 # Wait for stream
+              sleep 1 # Wait for stream
             }.to change {
               chunks.size
             }.from(1).to(2)
@@ -52,7 +52,7 @@ describe "Streaming Requests", streaming: true do
 
             expect {
               create(:text_message)
-              sleep 0.2 # Wait for stream
+              sleep 1 # Wait for stream
             }.not_to change {
               chunks.size
             }
@@ -67,7 +67,7 @@ describe "Streaming Requests", streaming: true do
 
             expect {
               message = create(:sound_message, room: room)
-              sleep 0.1 # Wait for stream
+              sleep 1 # Wait for stream
             }.to change {
               chunks.size
             }.from(0).to(1)
@@ -94,7 +94,7 @@ describe "Streaming Requests", streaming: true do
 
             expect {
               message = create(:tweet_message, room: room)
-              sleep 0.1 # Wait for stream
+              sleep 1 # Wait for stream
             }.to change {
               chunks.size
             }.from(0).to(1)
@@ -120,7 +120,7 @@ describe "Streaming Requests", streaming: true do
           stream "/room/#{room.id}/live" do |chunks|
             expect {
               create(:text_message, room: room)
-              sleep 0.2 # Wait for stream
+              sleep 1 # Wait for stream
             }.not_to change {
               chunks.size
             }
