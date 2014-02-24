@@ -1,0 +1,10 @@
+before_script:
+  - cp config/application{.example,}.yml
+  - cp config/database{.example,}.yml
+  - bundle exec rake db:create db:schema:load
+branches:
+  only:
+    - master
+language: ruby
+rvm:
+  - 2.1.0
