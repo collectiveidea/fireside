@@ -14,13 +14,13 @@ designed to be easily and freely deployed to Heroku.
 
 First, you'll need the Heroku Toolbelt:
 
-```
+```bash
 brew install heroku-toolbelt
 ```
 
 Then deployment is easy:
 
-```
+```bash
 git clone https://github.com/collectiveidea/fireside.git
 cd fireside
 cp config/application{.example,}.yml
@@ -58,7 +58,7 @@ Fireside development requires:
 
 Fork and clone the project, then:
 
-```
+```bash
 cp config/application{.example,}.yml
 cp config/database{.example,}.yml # and update
 bundle install
