@@ -42,8 +42,15 @@ GEM
       bcrypt (>= 3.1.3)
     buftok (0.2.0)
     builder (3.1.4)
+    capybara (2.2.1)
+      mime-types (>= 1.16)
+      nokogiri (>= 1.3.3)
+      rack (>= 1.0.0)
+      rack-test (>= 0.5.4)
+      xpath (~> 2.0)
     climate_control (0.0.3)
       activesupport (>= 3.0)
+    cliver (0.3.2)
     cocaine (0.5.3)
       climate_control (>= 0.0.3, < 1.0)
     codeclimate-test-reporter (0.3.0)
@@ -99,6 +106,11 @@ GEM
       activerecord (>= 3.1)
       activesupport (>= 3.1)
       arel
+    poltergeist (1.5.0)
+      capybara (~> 2.1)
+      cliver (~> 0.3.1)
+      multi_json (~> 1.0)
+      websocket-driver (>= 0.2.0)
     polyglot (0.3.4)
     pry (0.9.12.6)
       coderay (~> 1.0)
@@ -182,6 +194,9 @@ GEM
       simple_oauth (~> 0.2.0)
     tzinfo (0.3.38)
     uuidtools (2.1.4)
+    websocket-driver (0.3.2)
+    xpath (2.0.0)
+      nokogiri (~> 1.3)
 
 PLATFORMS
   ruby
@@ -191,6 +206,7 @@ DEPENDENCIES
   actionpack-xml_parser (~> 1.0)
   aws-sdk (~> 1.34)
   bcrypt-ruby (~> 3.1)
+  capybara (~> 2.2)
   codeclimate-test-reporter
   database_cleaner (~> 1.2)
   email_validator (~> 1.4)
@@ -200,6 +216,7 @@ DEPENDENCIES
   paperclip (~> 4.1)
   pg (~> 0.17.1)
   pg_search (~> 0.7.3)
+  poltergeist (~> 1.5)
   pry-rails
   puma (~> 2.7)
   rails (~> 4.0.3)
