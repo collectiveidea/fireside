@@ -22,6 +22,6 @@ group :development, :test do
   gem "codeclimate-test-reporter", require: false
   gem "database_cleaner", "~> 1.2"
   gem "factory_girl_rails", "~> 4.4"
-  gem "pry"
+  gem "pry-rails"
   gem "rspec-rails", "~> 2.14"
 end
