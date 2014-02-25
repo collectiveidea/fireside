@@ -29,6 +29,7 @@ module Fireside
 
     config.i18n.enforce_available_locales = true
 
+    config.middleware.use Rack::Deflater
     config.middleware.insert_after ActionDispatch::ParamsParser, ActionDispatch::XmlParamsParser
   end
 end
