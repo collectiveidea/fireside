@@ -70,6 +70,10 @@ class Message < ActiveRecord::Base
     new(JSON.load(payload))
   end
 
+  def self.after_id(id)
+    where("id > ?", id)
+  end
+
   def star
     update(starred: true)
   end
