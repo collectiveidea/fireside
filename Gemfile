@@ -8,7 +8,7 @@ gem "pg", "~> 0.17.1"
 
 gem "actionpack-xml_parser", "~> 1.0"
 gem "aws-sdk", "~> 1.34"
-gem "bcrypt-ruby", "~> 3.1"
+gem "bcrypt", "~> 3.1"
 gem "email_validator", "~> 1.4"
 gem "figaro", "~> 0.7.0"
 gem "jbuilder", "~> 2.0"
