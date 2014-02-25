@@ -6,6 +6,10 @@ gem "rails", "~> 4.0.3"
 
 gem "pg", "~> 0.17.1"
 
+gem "coffee-rails", "~> 4.0"
+gem "jquery-rails", "~> 3.1"
+gem "turbolinks", "~> 2.2"
+
 gem "actionpack-xml_parser", "~> 1.0"
 gem "aws-sdk", "~> 1.34"
 gem "bcrypt-ruby", "~> 3.1"
