@@ -16,6 +16,10 @@ RSpec.configure do |config|
     DatabaseCleaner.clean_with(:truncation)
   end
 
+  config.around(js: true) do |example|
+    with_truncation { example.run }
+  end
+
   config.before do
     DatabaseCleaner.start
   end
