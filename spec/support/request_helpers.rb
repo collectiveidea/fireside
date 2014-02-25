@@ -24,10 +24,6 @@ module RequestHelpers
     @default_headers ||= {}
   end
 
-  def authenticate(username, password = nil)
-    default_headers["Authorization"] = ActionController::HttpAuthentication::Basic.encode_credentials(username, password).to_s
-  end
-
   def with_format(format)
     set_format(format)
     yield
