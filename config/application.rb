@@ -34,5 +34,7 @@ module Fireside
       # Don't gzip streaming endpoints
       env["PATH_INFO"] !~ %r(^/room/\d+/live)
     end
+
+    config.allow_concurrency = true
   end
 end

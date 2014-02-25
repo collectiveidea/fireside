@@ -1,0 +1,10 @@
+<% content_for :head do %>
+  <%= tag :meta, name: "room-id", content: @room.id %>
+<% end %>
+<h1><%= @room.name %></h1>
+<ol id="message-list"></ol>
+<form id="new-message-form">
+  <label for="new-message-input">Message</label>
+  <input type="text" id="new-message-input" />
+  <input type="submit" value="Send" />
+</form>

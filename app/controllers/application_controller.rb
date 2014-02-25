@@ -23,7 +23,7 @@ class ApplicationController < ActionController::Base
   end
 
   def api_request?
-    request.format.json? || request.format.xml?
+    (request.format.json? || request.format.xml?) && !request.xhr?
   end
 
   def authenticate_web_request
@@ -33,6 +33,6 @@ class ApplicationController < ActionController::Base
   end
 
   def web_request?
-    request.format.html? || request.format.xhr?
+    request.format.html? || request.xhr?
   end
 end
