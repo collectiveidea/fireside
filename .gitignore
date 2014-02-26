@@ -1,4 +1,5 @@
 /.bundle
+/chromedriver.log
 /config/application.yml
 /config/database.yml
 /log/*.log

@@ -24,12 +24,14 @@ gem "twitter", "~> 5.7"
 group :development, :test do
   gem "accept_values_for", "~> 0.4.3"
   gem "capybara", "~> 2.2"
+  gem "capybara-puma", "~> 1.0"
   gem "codeclimate-test-reporter", require: false
   gem "database_cleaner", "~> 1.2"
   gem "factory_girl_rails", "~> 4.4"
   gem "poltergeist", "~> 1.5"
   gem "pry-rails"
   gem "rspec-rails", "~> 2.14"
+  gem "selenium-webdriver", "~> 2.40"
 end
 
 group :production do
