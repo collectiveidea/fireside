@@ -18,7 +18,7 @@ development:
   adapter: postgresql
   encoding: unicode
   database: fireside_development
-  pool: 5
+  pool: 16
   username: postgres
   password:
 
@@ -47,7 +47,7 @@ test:
   adapter: postgresql
   encoding: unicode
   database: fireside_test
-  pool: 5
+  pool: 16
   username: postgres
   password:
 
@@ -55,6 +55,6 @@ production:
   adapter: postgresql
   encoding: unicode
   database: fireside_production
-  pool: 5
+  pool: 16
   username: postgres
   password:
