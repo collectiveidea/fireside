@@ -1,4 +1,6 @@
-require File.expand_path('../boot', __FILE__)
+require File.expand_path("../boot", __FILE__)
+
+require File.expand_path("../../lib/conditional_deflater", __FILE__)
 
 # Pick the frameworks you want:
 require "active_record/railtie"
@@ -30,5 +32,9 @@ module Fireside
     config.i18n.enforce_available_locales = true
 
     config.middleware.insert_after ActionDispatch::ParamsParser, ActionDispatch::XmlParamsParser
+    config.middleware.use ConditionalDeflater do |env|
+      # Don't gzip streaming endpoints
+      env["PATH_INFO"] !~ %r(^/room/\d+/live)
+    end
   end
 end
