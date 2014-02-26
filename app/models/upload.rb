@@ -1,24 +1,10 @@
 class Upload < ActiveRecord::Base
+  extend HasPaperclip
+
   belongs_to :user, inverse_of: :uploads
   belongs_to :room, inverse_of: :uploads
 
-  if ENV["S3_BUCKET"]
-    # S3 storage
-    has_attached_file :file,
-      path: "/uploads/:fingerprint.:extension",
-      s3_credentials: {
-        bucket: ENV["S3_BUCKET"],
-        access_key_id: ENV["S3_ACCESS_KEY_ID"],
-        secret_access_key: ENV["S3_SECRET_ACCESS_KEY"]
-      },
-      s3_protocol: "https",
-      storage: :s3,
-      url: ":s3_domain_url"
-  else
-    # Filesystem storage
-    has_attached_file :file,
-      url: "/uploads/:fingerprint.:extension"
-  end
+  has_attached_file :file, paperclip_options
 
   validates :user_id, :room_id, presence: true, strict: true
   validates_attachment :file, presence: true
