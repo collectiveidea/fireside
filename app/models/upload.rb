@@ -3,6 +3,9 @@ class Upload < ActiveRecord::Base
 
   belongs_to :user, inverse_of: :uploads
   belongs_to :room, inverse_of: :uploads
+  belongs_to :message
+
+  validates :message_id, uniqueness: { allow_nil: true }
 
   has_attached_file :file, paperclip_options
 
@@ -10,8 +13,17 @@ class Upload < ActiveRecord::Base
   validates_attachment :file, presence: true
   do_not_validate_attachment_file_type :file
 
-  def self.old_to_new
-    order(:created_at)
+  def self.for_room(room)
+    where(room_id: room, private: false).order(:created_at).limit(5)
+  end
+
+  def self.for_message(message)
+    where(message_id: message).first!
+  end
+
+  def attach_to_message(message)
+    self.message = message
+    save!
   end
 
   def byte_size
