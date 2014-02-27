@@ -5,8 +5,8 @@ class ApplicationController < ActionController::Base
     head :bad_request
   end
 
-  before_action :authenticate_api_request, if: :api_request?
-  before_action :authenticate_web_request, if: :web_request?
+  before_action :authenticate_api_request#, if: :api_request?
+  # before_action :authenticate_web_request, if: :web_request?
 
   attr_accessor :current_user
 

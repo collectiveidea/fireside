@@ -11,6 +11,13 @@ class RoomsController < ApplicationController
   end
 
   def show
+    respond_to do |format|
+      format.html do
+        @messages = @room.messages.recent
+      end
+
+      format.any
+    end
   end
 
   def update

@@ -69,6 +69,6 @@ class LiveMessagesController < ApplicationController
   end
 
   def last_event_id
-    request.headers["Last-Event-ID"].try(:to_i)
+    request.headers["Last-Event-ID"].try(:to_i).tap { |x| puts x.inspect }
   end
 end

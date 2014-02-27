@@ -2,7 +2,11 @@
   <%= tag :meta, name: "room-id", content: @room.id %>
 <% end %>
 <h1><%= @room.name %></h1>
-<ol id="message-list"></ol>
+<ol id="message-list">
+  <% @messages.each do |message| %>
+    <%= render partial: "messages/message", locals: { message: message } %>
+  <% end %>
+</ol>
 <form id="new-message-form">
   <label for="new-message-input">Message</label>
   <input type="text" id="new-message-input" />
