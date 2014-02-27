@@ -12,4 +12,4 @@ env:
       UXeX2If5oHUXPgFHhsZveZHZ3bkOtJDMbl5Nn6L/GXcpaHlrQYA=
 language: ruby
 rvm:
-  - 2.1.1
+  - jruby-1.7.10
