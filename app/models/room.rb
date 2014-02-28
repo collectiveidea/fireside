@@ -1,3 +1,5 @@
+require "wait_for_notify"
+
 class Room < ActiveRecord::Base
   has_many :messages, inverse_of: :room, dependent: :nullify
   has_many :presences, inverse_of: :room, dependent: :destroy

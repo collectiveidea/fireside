@@ -4,11 +4,12 @@ module StreamingHelpers
   extend ActiveSupport::Concern
 
   included do
-    attr_reader :server, :server_port, :server_thread, :response
+    attr_reader :response
   end
 
   def with_server
     start_server
+    wait_for_server
     yield
   ensure
     stop_server
@@ -19,36 +20,34 @@ module StreamingHelpers
 
     chunks = []
 
-    begin
-      client_thread = Thread.new do
-        Net::HTTP.start(SERVER_HOST, server_port) do |http|
-          request = Net::HTTP::Get.new(path)
+    client = Thread.new do
+      Net::HTTP.start(SERVER_HOST, server_port) do |http|
+        request = Net::HTTP::Get.new(path)
 
-          headers.each do |name, value|
-            request[name] = value
-          end
+        headers.each do |name, value|
+          request[name] = value
+        end
 
-          http.request(request) do |response|
-            Thread.current[:response] = response
+        http.request(request) do |response|
+          Thread.current[:response] = response
 
-            response.read_body do |value|
-              if value.present?
-                chunks << build_chunk(value, headers)
-              end
-            end
+          response.read_body do |value|
+            Thread.current[:connected] = true
+            chunks << build_chunk(value, headers) if value.present?
           end
         end
       end
-
-      wait_for_server
-
-      yield chunks
     end
 
-    response = client_thread[:response]
+    Timeout.timeout(10) { loop until client[:connected] }
+
+    yield chunks
+
+    client.kill
+
     @response = ActionDispatch::TestResponse.new(
-      response.code,
-      response.to_hash,
+      client[:response].code,
+      client[:response].to_hash,
       chunks.join("\n")
     )
   end
@@ -56,35 +55,45 @@ module StreamingHelpers
   private
 
   def start_server
-    @server = Puma::Server.new(Rails.application)
-    @server_port = find_available_server_port
-    server.add_tcp_listener(SERVER_HOST, server_port)
-    @server_thread = server.run
+    server.run
   end
 
-  def find_available_server_port
-    server = TCPServer.new(SERVER_HOST, 0)
-    server.addr[1]
-  ensure
-    server.close if server
+  def server
+    @server ||= begin
+      server = Puma::Server.new(Rails.application, server_events)
+      server.add_tcp_listener(SERVER_HOST, server_port)
+      server
+    end
   end
 
-  def stop_server
-    server_thread.kill if server_thread
+  def server_events
+    @server_events ||= begin
+      events = Puma::Events.new(STDOUT, STDERR)
+      events.register(:state) { |s| @server_state = s }
+      events
+    end
+  end
+
+  def server_port
+    @server_port ||= begin
+      server = TCPServer.new(SERVER_HOST, 0)
+      server.addr[1]
+    ensure
+      server.close if server
+    end
   end
 
   def wait_for_server
-    sleep 0.1 until server.running > 0
+    Timeout.timeout(10) { loop until @server_state == :running }
+  end
+
+  def stop_server
+    server.halt(true)
   end
 
   def build_chunk(value, headers)
     accept = Mime::Type.lookup(headers["Accept"])
-
-    if accept.json? || accept.xml?
-      Content.new(value, accept)
-    else
-      value
-    end
+    accept.json? || accept.xml? ? Content.new(value, accept) : value
   end
 end
 

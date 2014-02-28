@@ -1,10 +1,10 @@
-ruby "2.1.1"
+ruby "1.9.3", engine: "jruby", engine_version: "1.7.10"
 
 source "https://rubygems.org"
 
 gem "rails", "~> 4.0.3"
 
-gem "pg", "~> 0.17.1"
+gem "activerecord-jdbcpostgresql-adapter", "~> 1.3"
 
 gem "actionpack-xml_parser", "~> 1.0"
 gem "aws-sdk", "~> 1.34"
